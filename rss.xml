@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Andreson's Matrix]]></title><description><![CDATA[Reliable self-learning front-end engineer with 4 year experience in building fundamental project architecture to product released. Focusing on problem-solving with the user perspective and streamline the developing process.]]></description><link>https://blog.hokuan.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 10 Aug 2021 19:19:19 GMT</lastBuildDate><item><title><![CDATA[🥊 Cracking JavaScript Series: Event Loop]]></title><description><![CDATA[Call Stack, Web APIs, Event Queue, Micro-tasks, and Macro-tasks]]></description><link>https://blog.hokuan.io/posts/cracking-javascript-series-event-loop</link><guid isPermaLink="false">https://blog.hokuan.io/posts/cracking-javascript-series-event-loop</guid><pubDate>Thu, 03 Jun 2021 22:40:32 GMT</pubDate><content:encoded>&lt;p&gt;We may have heard that JavaScript executes all the operations on a single thread, but what is the magic empowering JavaScript to be an &lt;strong&gt;asynchronous programming language&lt;/strong&gt;?
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Andreson's Matrix]]></title><description><![CDATA[Reliable self-learning front-end engineer with 4 year experience in building fundamental project architecture to product released. Focusing on problem-solving with the user perspective and streamline the developing process.]]></description><link>https://andreson.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 10 Aug 2021 20:47:05 GMT</lastBuildDate><item><title><![CDATA[🥊 Cracking JavaScript Series: Event Loop]]></title><description><![CDATA[Call Stack, Web APIs, Event Queue, Micro-tasks, and Macro-tasks]]></description><link>https://andreson.io/posts/cracking-javascript-series-event-loop</link><guid isPermaLink="false">https://andreson.io/posts/cracking-javascript-series-event-loop</guid><pubDate>Thu, 03 Jun 2021 22:40:32 GMT</pubDate><content:encoded>&lt;p&gt;We may have heard that JavaScript executes all the operations on a single thread, but what is the magic empowering JavaScript to be an &lt;strong&gt;asynchronous programming language&lt;/strong&gt;?
 Event Loop is the rationale and forms the &lt;strong&gt;non-blocking feature&lt;/strong&gt; like Node.js.&lt;/p&gt;
 &lt;p&gt;First, we must keep in mind that &lt;strong&gt;Event Loop is related to the runtime environment&lt;/strong&gt;, such as the browser or Node.js, not the JavaScript Engine(V8).&lt;/p&gt;
 &lt;p&gt;To be more specific, Event Loop is an endless loop that waits for tasks, executes them, and then sleeps, waiting for more tasks.
@@ -11,7 +11,7 @@ If you first get to know this topic and still feel a bit fuzzy, don’t worry, I
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
-    href=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/ea941/js-event-loop.png&quot;
+    href=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/ea941/js-event-loop.png&quot;
     style=&quot;display: block&quot;
     target=&quot;_blank&quot;
     rel=&quot;noopener&quot;
@@ -22,28 +22,28 @@ If you first get to know this topic and still feel a bit fuzzy, don’t worry, I
   &gt;&lt;/span&gt;
   &lt;picture&gt;
           &lt;source
-              srcset=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/8ac56/js-event-loop.webp 240w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/d3be9/js-event-loop.webp 480w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/e46b2/js-event-loop.webp 960w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/f992d/js-event-loop.webp 1440w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/882b9/js-event-loop.webp 1920w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/57aca/js-event-loop.webp 2031w&quot;
+              srcset=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/8ac56/js-event-loop.webp 240w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/d3be9/js-event-loop.webp 480w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/e46b2/js-event-loop.webp 960w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/f992d/js-event-loop.webp 1440w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/882b9/js-event-loop.webp 1920w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/57aca/js-event-loop.webp 2031w&quot;
               sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
               type=&quot;image/webp&quot;
             /&gt;
           &lt;source
-            srcset=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/8ff5a/js-event-loop.png 240w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/e85cb/js-event-loop.png 480w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png 960w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/07a9c/js-event-loop.png 1440w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/29114/js-event-loop.png 1920w,
-/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/ea941/js-event-loop.png 2031w&quot;
+            srcset=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/8ff5a/js-event-loop.png 240w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/e85cb/js-event-loop.png 480w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png 960w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/07a9c/js-event-loop.png 1440w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/29114/js-event-loop.png 1920w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/ea941/js-event-loop.png 2031w&quot;
             sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
             type=&quot;image/png&quot;
           /&gt;
           &lt;img
             class=&quot;gatsby-resp-image-image&quot;
-            src=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png&quot;
+            src=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png&quot;
             alt=&quot;js event loop&quot;
             title=&quot;js event loop&quot;
             loading=&quot;lazy&quot;
@@ -60,7 +60,7 @@ If you first get to know this topic and still feel a bit fuzzy, don’t worry, I
 &lt;li&gt;Pull a task to Call Stack one at a time by &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Event Loop&lt;/a&gt; till the queue is empty.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;PS: To make the whole story short, we only focus on the “Stack” in the first step.
-If you are interested in how the V8 JavaScript Engine works, you could check out the previous article &lt;a href=&quot;/andreson-blog/posts/cracking-javascript-series-javascript-engine#call-stack--memory-heap&quot;&gt;🥊 Cracking JavaScript Series: JavaScript Engine.&lt;/a&gt; &lt;/p&gt;
+If you are interested in how the V8 JavaScript Engine works, you could check out the previous article &lt;a href=&quot;/posts/cracking-javascript-series-javascript-engine#call-stack--memory-heap&quot;&gt;🥊 Cracking JavaScript Series: JavaScript Engine.&lt;/a&gt; &lt;/p&gt;
 &lt;h2 id=&quot;call-stack&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#call-stack&quot; aria-label=&quot;call stack permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Call Stack&lt;/h2&gt;
 &lt;p&gt;It represents the order of JavaScript code execution and keeps track of its place in a script that calls multiple functions. Whenever a function is finished, it is popped from the stack. It is a &lt;strong&gt;LIFO queue (Last In, First Out)&lt;/strong&gt;.&lt;/p&gt;
 &lt;ul&gt;
@@ -188,7 +188,7 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
-    href=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png&quot;
+    href=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png&quot;
     style=&quot;display: block&quot;
     target=&quot;_blank&quot;
     rel=&quot;noopener&quot;
@@ -199,22 +199,22 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
   &gt;&lt;/span&gt;
   &lt;picture&gt;
           &lt;source
-              srcset=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/8ac56/task-queue-composition.webp 240w,
-/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/d3be9/task-queue-composition.webp 480w,
-/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/e299d/task-queue-composition.webp 866w&quot;
+              srcset=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/8ac56/task-queue-composition.webp 240w,
+/static/17660f2ec8245f8572b1f68e741dd7f5/d3be9/task-queue-composition.webp 480w,
+/static/17660f2ec8245f8572b1f68e741dd7f5/e299d/task-queue-composition.webp 866w&quot;
               sizes=&quot;(max-width: 866px) 100vw, 866px&quot;
               type=&quot;image/webp&quot;
             /&gt;
           &lt;source
-            srcset=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/8ff5a/task-queue-composition.png 240w,
-/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/e85cb/task-queue-composition.png 480w,
-/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png 866w&quot;
+            srcset=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/8ff5a/task-queue-composition.png 240w,
+/static/17660f2ec8245f8572b1f68e741dd7f5/e85cb/task-queue-composition.png 480w,
+/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png 866w&quot;
             sizes=&quot;(max-width: 866px) 100vw, 866px&quot;
             type=&quot;image/png&quot;
           /&gt;
           &lt;img
             class=&quot;gatsby-resp-image-image&quot;
-            src=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png&quot;
+            src=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png&quot;
             alt=&quot;task queue composition&quot;
             title=&quot;task queue composition&quot;
             loading=&quot;lazy&quot;
@@ -309,13 +309,13 @@ Callback Time&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=8aGhZQkoFbQ&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Philip Roberts | JSConf EU &lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://levelup.gitconnected.com/asynchronous-javascript-part-3-85390632dd1a&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;https://levelup.gitconnected.com/asynchronous-javascript-part-3-85390632dd1a&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://towardsdev.com/event-loop-in-javascript-672c07618dc9&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;https://towardsdev.com/event-loop-in-javascript-672c07618dc9&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[🥊 Cracking JavaScript Series: JavaScript Engine]]></title><description><![CDATA[AST, Compiler, Interpreter, V8, Call Stack, and Memory Heap]]></description><link>https://blog.hokuan.io/posts/cracking-javascript-series-javascript-engine</link><guid isPermaLink="false">https://blog.hokuan.io/posts/cracking-javascript-series-javascript-engine</guid><pubDate>Mon, 16 Mar 2020 18:32:18 GMT</pubDate><content:encoded>&lt;p&gt;&lt;span
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[🥊 Cracking JavaScript Series: JavaScript Engine]]></title><description><![CDATA[AST, Compiler, Interpreter, V8, Call Stack, and Memory Heap]]></description><link>https://andreson.io/posts/cracking-javascript-series-javascript-engine</link><guid isPermaLink="false">https://andreson.io/posts/cracking-javascript-series-javascript-engine</guid><pubDate>Mon, 16 Mar 2020 18:32:18 GMT</pubDate><content:encoded>&lt;p&gt;&lt;span
       class=&quot;gatsby-resp-image-wrapper&quot;
       style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; &quot;
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
-    href=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/25e07/javascript-engine-execution-steps.jpg&quot;
+    href=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/25e07/javascript-engine-execution-steps.jpg&quot;
     style=&quot;display: block&quot;
     target=&quot;_blank&quot;
     rel=&quot;noopener&quot;
@@ -326,28 +326,28 @@ Callback Time&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
   &gt;&lt;/span&gt;
   &lt;picture&gt;
           &lt;source
-              srcset=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/8ac56/javascript-engine-execution-steps.webp 240w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/d3be9/javascript-engine-execution-steps.webp 480w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/e46b2/javascript-engine-execution-steps.webp 960w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/f992d/javascript-engine-execution-steps.webp 1440w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/882b9/javascript-engine-execution-steps.webp 1920w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/b8f0e/javascript-engine-execution-steps.webp 3358w&quot;
+              srcset=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/8ac56/javascript-engine-execution-steps.webp 240w,
+/static/74f1593e765ce853960c4c5b7b897fb8/d3be9/javascript-engine-execution-steps.webp 480w,
+/static/74f1593e765ce853960c4c5b7b897fb8/e46b2/javascript-engine-execution-steps.webp 960w,
+/static/74f1593e765ce853960c4c5b7b897fb8/f992d/javascript-engine-execution-steps.webp 1440w,
+/static/74f1593e765ce853960c4c5b7b897fb8/882b9/javascript-engine-execution-steps.webp 1920w,
+/static/74f1593e765ce853960c4c5b7b897fb8/b8f0e/javascript-engine-execution-steps.webp 3358w&quot;
               sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
               type=&quot;image/webp&quot;
             /&gt;
           &lt;source
-            srcset=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/09b79/javascript-engine-execution-steps.jpg 240w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/7cc5e/javascript-engine-execution-steps.jpg 480w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg 960w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/644c5/javascript-engine-execution-steps.jpg 1440w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/0f98f/javascript-engine-execution-steps.jpg 1920w,
-/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/25e07/javascript-engine-execution-steps.jpg 3358w&quot;
+            srcset=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/09b79/javascript-engine-execution-steps.jpg 240w,
+/static/74f1593e765ce853960c4c5b7b897fb8/7cc5e/javascript-engine-execution-steps.jpg 480w,
+/static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg 960w,
+/static/74f1593e765ce853960c4c5b7b897fb8/644c5/javascript-engine-execution-steps.jpg 1440w,
+/static/74f1593e765ce853960c4c5b7b897fb8/0f98f/javascript-engine-execution-steps.jpg 1920w,
+/static/74f1593e765ce853960c4c5b7b897fb8/25e07/javascript-engine-execution-steps.jpg 3358w&quot;
             sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
             type=&quot;image/jpeg&quot;
           /&gt;
           &lt;img
             class=&quot;gatsby-resp-image-image&quot;
-            src=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg&quot;
+            src=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg&quot;
             alt=&quot;javascript engine execution steps&quot;
             title=&quot;javascript engine execution steps&quot;
             loading=&quot;lazy&quot;
@@ -595,7 +595,7 @@ element&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &lt;p&gt;🤔 &lt;strong&gt;Self-question&lt;/strong&gt;
 &lt;br&gt;How to deal with memory &lt;a href=&quot;https://en.wikipedia.org/wiki/Fragmentation_(computing)&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;fragmentation&lt;/a&gt;?
 &lt;br&gt;Take a look for &lt;a href=&quot;https://www.zhihu.com/question/51836333/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Memory paging.&lt;/a&gt;&lt;/p&gt;
-&lt;/blockquote&gt;</content:encoded></item><item><title><![CDATA[The Practical Experience in Implementing Objectives and Key Results(OKRs) from Dcard CEO and Gipi.]]></title><description><![CDATA[OKR, Strategy Map, Management, and Leadership]]></description><link>https://blog.hokuan.io/posts/the-practical-experience-in-implementing-objectives-and-key-results-from-real-cases</link><guid isPermaLink="false">https://blog.hokuan.io/posts/the-practical-experience-in-implementing-objectives-and-key-results-from-real-cases</guid><pubDate>Tue, 25 Feb 2020 15:28:00 GMT</pubDate><content:encoded>&lt;h2 id=&quot;前文&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%89%8D%E6%96%87&quot; aria-label=&quot;前文 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;前文&lt;/h2&gt;
+&lt;/blockquote&gt;</content:encoded></item><item><title><![CDATA[The Practical Experience in Implementing Objectives and Key Results(OKRs) from Dcard CEO and Gipi.]]></title><description><![CDATA[OKR, Strategy Map, Management, and Leadership]]></description><link>https://andreson.io/posts/the-practical-experience-in-implementing-objectives-and-key-results-from-real-cases</link><guid isPermaLink="false">https://andreson.io/posts/the-practical-experience-in-implementing-objectives-and-key-results-from-real-cases</guid><pubDate>Tue, 25 Feb 2020 15:28:00 GMT</pubDate><content:encoded>&lt;h2 id=&quot;前文&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%89%8D%E6%96%87&quot; aria-label=&quot;前文 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;前文&lt;/h2&gt;
 &lt;p&gt;在公司邁入第三年的因緣際會下，開始帶領公司前端團隊制定策略目標，進而接觸到了管理方法，再使用了兩年的 Scrum 後，
 逐漸發現除了顧好工程團隊的開發週期，更重要的是，團隊的努力與公司目標是否密切相關，而要量化這樣的關係，導入更具目標性的管理框架可為一解決方案。&lt;/p&gt;
 &lt;p&gt;我第一次被推坑 OKRs 是因為這本書「&lt;a href=&quot;https://www.books.com.tw/products/F014212244&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Measure what matters&lt;/a&gt;」，
