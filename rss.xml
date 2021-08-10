@@ -1,0 +1,962 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Andreson's Matrix]]></title><description><![CDATA[Reliable self-learning front-end engineer with 4 year experience in building fundamental project architecture to product released. Focusing on problem-solving with the user perspective and streamline the developing process.]]></description><link>https://blog.hokuan.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 10 Aug 2021 19:19:19 GMT</lastBuildDate><item><title><![CDATA[🥊 Cracking JavaScript Series: Event Loop]]></title><description><![CDATA[Call Stack, Web APIs, Event Queue, Micro-tasks, and Macro-tasks]]></description><link>https://blog.hokuan.io/posts/cracking-javascript-series-event-loop</link><guid isPermaLink="false">https://blog.hokuan.io/posts/cracking-javascript-series-event-loop</guid><pubDate>Thu, 03 Jun 2021 22:40:32 GMT</pubDate><content:encoded>&lt;p&gt;We may have heard that JavaScript executes all the operations on a single thread, but what is the magic empowering JavaScript to be an &lt;strong&gt;asynchronous programming language&lt;/strong&gt;?
+Event Loop is the rationale and forms the &lt;strong&gt;non-blocking feature&lt;/strong&gt; like Node.js.&lt;/p&gt;
+&lt;p&gt;First, we must keep in mind that &lt;strong&gt;Event Loop is related to the runtime environment&lt;/strong&gt;, such as the browser or Node.js, not the JavaScript Engine(V8).&lt;/p&gt;
+&lt;p&gt;To be more specific, Event Loop is an endless loop that waits for tasks, executes them, and then sleeps, waiting for more tasks.
+It ensures all the tasks from WebAPIs(Browser) or C++ APIs(Node.js) could queue up for being pulled into the stack and finally become executed.
+If you first get to know this topic and still feel a bit fuzzy, don’t worry, I will use the following graph to explain. 🤓 &lt;/p&gt;
+&lt;h2 id=&quot;basic-architecture&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#basic-architecture&quot; aria-label=&quot;basic architecture permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Basic Architecture&lt;/h2&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/ea941/js-event-loop.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 107.08333333333333%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAVCAYAAABG1c6oAAAACXBIWXMAAAPoAAAD6AG1e1JrAAADmElEQVQ4y51Vy3IbVRT0PxBSLkkjzciS0MuWbEvz1ozmpdFblqXIsSExlKGKrCiziKuyCFCpFMUm7PkI1qzY8g18TdN3ZDlG9gYWrXvqXt2ec7rPmdlJHdr4Pg7x64sRqoaF9EEH0oGNpxUbGcbZpo1sg2vjdm1uodG5O5eInT1dx+vfP+DPv3/D+YWFT+oeqp0Q0cJHxXaRPfagtD3IG7Q85FrdBPK9faXtJw/YSdcstK/meHkzRdH08KQZ4pvrAH/9UYYzM7Db6kHW+Wdeyqo+ZCNEoROjYMdJLPbEmawFyB062BFpSjUbn9Zc5KwIu1oE+8TGs8sm8h0XGTNKLuZuCfPeCObqEsbyJRR38JGQ6x2h0u5CEVkYAVqTFSrBKYkH0E7OUY9nyPLpoqy0HmHpmvgh1vBjT8WCcYp7srpFKB9TE7Fhhqj2ZihEU2bXQ8mfI++MkdUDVN0hysEMc6+DN30Tb2IDp76LanSKeneEPSNaa7ghzFDUmh1gYRrQWy5K3R6cuQV1Qm2MHmokTGkhlr6Dn8bExMGC5LtqgHKnj6IVQ7pPmCWhIjIMDfQ0E0f9CO/fFXHzdoRG/zmqTj+5/Llv4cNII3RceBaetklIg4pm79+EOdWl+HOk/W/xxA3QZG/+/L6MV9c6JL2PijOARFlKho99cw0RZ6htye4/QkhjZHNCfIk9i/p5MUYvhtCnETIkqntj5PWQLcRW0dYQsTDjEUI3MUWidrLmoOKOqEmfxGNkWmHSFmVnmFwUKHcGzJgmMesKta37ExTMLVNEn+XYb4eDJVrjFRRmmWM7CEjMPsu1RPELzEQ8QOKkCChsqQO6X9h2OcuRKrBRW9MzNAan2O9Tz9vMFTXEEdsjWl0hWH2FZjRfT4aYnIRw+pBQHGY0zm84hXt2yf6LoY3PUPGGyHW7ODyZ4WA8wXG8wD4JRJY16lr3Jo8TCnHTLOvq5i2u3/2C6IuvkTpyUXAiSD0Hux6ngm2SOV6XmidBwVqX/6jLgjCldrF8dY2L716jxokp3jZs0YxhTc6hj1awZhdQuQpCQaTQ6Wp39LCxE1PoVJozLds0xI7QGj5jyQO+EDoohR6KgYc9ZiLGTEhU7Y4Tpz8jREs9dJkzK5NUuC2QOnKSkhR9Y4C/nnlhFM0QZxmWL/Dg5XDn2n2It4z6kWQbm/9s4uyGUKSaowH/FXKyOihT4yr1TEoWP9Lt9+D/YvN9EfE/fGq3zQYneEIAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/8ac56/js-event-loop.webp 240w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/d3be9/js-event-loop.webp 480w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/e46b2/js-event-loop.webp 960w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/f992d/js-event-loop.webp 1440w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/882b9/js-event-loop.webp 1920w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/57aca/js-event-loop.webp 2031w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/8ff5a/js-event-loop.png 240w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/e85cb/js-event-loop.png 480w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png 960w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/07a9c/js-event-loop.png 1440w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/29114/js-event-loop.png 1920w,
+/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/ea941/js-event-loop.png 2031w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/png&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/andreson-blog/static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png&quot;
+            alt=&quot;js event loop&quot;
+            title=&quot;js event loop&quot;
+            loading=&quot;lazy&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;To execute an async function, the browser would utilize the four vital steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Add a function into &lt;a href=&quot;#call-stack&quot;&gt;Call Stack&lt;/a&gt;. &lt;/li&gt;
+&lt;li&gt;Handle the browser-related method in &lt;a href=&quot;#webapis&quot;&gt;WebAPIs&lt;/a&gt;. &lt;/li&gt;
+&lt;li&gt;Queue all the tasks in &lt;a href=&quot;#task-queue&quot;&gt;Task Queue&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Pull a task to Call Stack one at a time by &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/EventLoop&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Event Loop&lt;/a&gt; till the queue is empty.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;PS: To make the whole story short, we only focus on the “Stack” in the first step.
+If you are interested in how the V8 JavaScript Engine works, you could check out the previous article &lt;a href=&quot;/andreson-blog/posts/cracking-javascript-series-javascript-engine#call-stack--memory-heap&quot;&gt;🥊 Cracking JavaScript Series: JavaScript Engine.&lt;/a&gt; &lt;/p&gt;
+&lt;h2 id=&quot;call-stack&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#call-stack&quot; aria-label=&quot;call stack permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Call Stack&lt;/h2&gt;
+&lt;p&gt;It represents the order of JavaScript code execution and keeps track of its place in a script that calls multiple functions. Whenever a function is finished, it is popped from the stack. It is a &lt;strong&gt;LIFO queue (Last In, First Out)&lt;/strong&gt;.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Enqueue
+&lt;img src=&quot;https://i.imgur.com/W8NZfZv.gif&quot;&gt; &lt;/li&gt;
+&lt;li&gt;Dequeue
+&lt;img src=&quot;https://i.imgur.com/AiKeOv7.gif&quot;&gt;
+By the way, an anonymous function is the default function executed first in the Call Stack. It usually appears as a &lt;code class=&quot;language-text&quot;&gt;main()&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;global()&lt;/code&gt; function in the dev-tool of the browser.&lt;/li&gt;
+&lt;li&gt;Whenever an error occurs, the browser would also show its stack position.
+&lt;img src=&quot;https://i.imgur.com/MjTBoq0.png&quot;&gt;&lt;/li&gt;
+&lt;li&gt;Stack Overflow
+&lt;img src=&quot;https://i.imgur.com/Tl0zUvT.jpg&quot;&gt;
+Some may ask: “how many recursive function calls causes stack overflow?”
+There is no standard answer, and it depends on your environment and function complexity. Here on OS X 10.13, I’m limited to 8192K by default.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;webapis&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#webapis&quot; aria-label=&quot;webapis permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;&lt;a href=&quot;https://developer.mozilla.org/zh-TW/docs/Web/API&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;WebAPIs&lt;/a&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Since V8 engine does not include “setTimeout”, how does the browser execute it?&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;JavaScript did not implement the APIs for web operations, but the &lt;strong&gt;browser&lt;/strong&gt; did, and it could be divided into &lt;strong&gt;Browser Object Model (BOM)&lt;/strong&gt; and &lt;strong&gt;Document Object Model (DOM)&lt;/strong&gt;. Therefore, a standard JavaScript would contain the following three components:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;JavaScript Core (based on ECMAScript standard)&lt;/li&gt;
+&lt;li&gt;BOM (Browser Object Model)&lt;/li&gt;
+&lt;li&gt;DOM (Document Object Model)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/gdcMX2y.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;For example, &lt;code class=&quot;language-text&quot;&gt;setTimeout()&lt;/code&gt; method is defined on the &lt;strong&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;WindowOrWorkerGlobalScope&lt;/a&gt;&lt;/strong&gt; mixin(interface) and implemented by &lt;strong&gt;Window&lt;/strong&gt; and &lt;strong&gt;WorkerGlobalScope&lt;/strong&gt;. Those implementations belong to &lt;strong&gt;&lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Web Workers API&lt;/a&gt;&lt;/strong&gt; so that we could use &lt;code class=&quot;language-text&quot;&gt;window.setTimout()&lt;/code&gt; or directly call &lt;code class=&quot;language-text&quot;&gt;setTimout()&lt;/code&gt; on our browsers. The followings are other methods that you may be familiar with also come from WindowOrWorkerGlobalScope:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.atob()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.btoa()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.clearInterval()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.clearTimeout()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.createImageBitmap()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.fetch()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.queueMicrotask()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.setInterval()&lt;/li&gt;
+&lt;li&gt;WindowOrWorkerGlobalScope.setTimeout()&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;task-queue&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#task-queue&quot; aria-label=&quot;task queue permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Task Queue&lt;/h2&gt;
+&lt;p&gt;Task Queue could be the most complex but interesting field of asynchronous execution concept.
+For a better understanding, I would break Task Queue into four parts to elaborate.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;#definition-of-task&quot;&gt;Definition of Task&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#macrotask-and-microtask&quot;&gt;Advanced: Macrotask and Microtask&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#odd-case-of-the-combination-of-macrotasks-and-microtasks&quot;&gt;Advanced: Odd Case of the combination of Macrotasks and Microtasks.&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If you want to get a quick answer, part 1 would be enough, but if you still have time, I would suggest you dive into part2-3. :)&lt;/p&gt;
+&lt;h3 id=&quot;definition-of-task&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#definition-of-task&quot; aria-label=&quot;definition of task permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Definition of Task&lt;/h3&gt;
+&lt;p&gt;A task is any JavaScript code which is scheduled to be run by the standard mechanisms such as initially starting to run a program, an event callback being run, or an interval or timeout being fired. These all get scheduled on the task queue. &lt;/p&gt;
+&lt;p&gt;Tasks get added to the task queue when:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A new JavaScript program or subprogram is executed (such as from a console, or by running the code in a &amp;#x3C;script&gt; element) directly.&lt;/li&gt;
+&lt;li&gt;An event fires, adding the event’s callback function to the task queue.&lt;/li&gt;
+&lt;li&gt;A timeout or interval created with &lt;code class=&quot;language-text&quot;&gt;setTimeout()&lt;/code&gt; or &lt;code class=&quot;language-text&quot;&gt;setInterval()&lt;/code&gt; is reached, causing the corresponding callback to be added to the task queue.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Keep in mind that the functions in the callback queue start getting executed only after:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We have reached the end of the program&lt;/li&gt;
+&lt;li&gt;There are no functions left to be executed in the call stack&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Here comes an example:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;foo&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;First&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;bar&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Second&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;500&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;token function-variable function&quot;&gt;baz&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Third&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token function&quot;&gt;bar&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;foo&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;baz&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;What’s the output?&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;&quot;First&quot;
+&quot;Third&quot;
+&quot;Second&quot;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol&gt;
+&lt;li&gt;We invoke &lt;code class=&quot;language-text&quot;&gt;bar&lt;/code&gt;. &lt;code class=&quot;language-text&quot;&gt;bar&lt;/code&gt; returns a &lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt; function.&lt;/li&gt;
+&lt;li&gt;The callback we passed to &lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt; gets added to the Web API, the &lt;code class=&quot;language-text&quot;&gt;setTimeout&lt;/code&gt; function and &lt;code class=&quot;language-text&quot;&gt;bar&lt;/code&gt; get popped off the callstack.&lt;/li&gt;
+&lt;li&gt;The timer runs, in the meantime &lt;code class=&quot;language-text&quot;&gt;foo&lt;/code&gt; gets invoked and logs First. foo returns (undefined),&lt;code class=&quot;language-text&quot;&gt;baz&lt;/code&gt; gets invoked, and the callback gets added to the queue.&lt;/li&gt;
+&lt;li&gt;&lt;code class=&quot;language-text&quot;&gt;baz&lt;/code&gt; &lt;code class=&quot;language-text&quot;&gt;logs&lt;/code&gt; Third. The event loop sees the callstack is empty after &lt;code class=&quot;language-text&quot;&gt;baz&lt;/code&gt; returned, after which the callback gets added to the call stack.&lt;/li&gt;
+&lt;li&gt;The callback logs &lt;code class=&quot;language-text&quot;&gt;Second&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Basically, the setTimeout needs to wait for all the code for queued messages to complete even though you specified a particular time limit for your setTimeout.&lt;/p&gt;
+&lt;p&gt;&lt;figure class=&quot;md-figure&quot;&gt;&lt;img src=&quot;https://i.imgur.com/9pqDma8.gif&quot;&gt;&lt;figcaption&gt;The diagram is identical for Node.js, instead of WebAPIs, we have in C++ APIs and the threading is hidden from you by C++.&lt;/figcaption&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How about other WebAPIs like &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/GlobalEventHandlers/onclick&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;GlobalEventHandlers.onclick&lt;/a&gt;?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If we bind a click listener on a dom, it would be hooked on the WebAPIs and wait for triggering.
+&lt;img src=&quot;https://i.imgur.com/gqimymv.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;If we click too many times, the listener functions would be added to the callback queue, and whenever the call stack is empty, the event loop would pull another task from the callback queue to add it to the call stack for executing the code.
+&lt;img src=&quot;https://i.imgur.com/kgGncRU.jpg&quot;&gt;&lt;/p&gt;
+&lt;p&gt;The event loop proceeds to execute all the callbacks waiting in the task queue. Inside the task queue, the tasks are broadly classified into two categories, namely micro-tasks and macro-tasks.&lt;/p&gt;
+&lt;h3 id=&quot;macrotask-and-microtask&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#macrotask-and-microtask&quot; aria-label=&quot;macrotask and microtask permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Macrotask and Microtask&lt;/h3&gt;
+&lt;p&gt;The previous section explains the order between sync and async function.&lt;/p&gt;
+&lt;p&gt;Likewise, the browser also prioritizes async functions according to two task types: Macrotask and Microtask.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/YUs5Zfi.png&quot;&gt;&lt;/p&gt;
+&lt;h4 id=&quot;macrotasks&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#macrotasks&quot; aria-label=&quot;macrotasks permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Macrotasks&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Macro-task represents some &lt;strong&gt;discrete and independent work.&lt;/strong&gt; These are always the execution of the JavaScript code and micro-task queue is empty. Macro-task queue is often considered the same as the task queue or the event queue. However, the only small difference between the two is that the &lt;strong&gt;task queue is used for synchronous statements&lt;/strong&gt; whereas the &lt;strong&gt;macro-task queue is used for asynchronous statements.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;In JavaScript, no code is allowed to execute until an event has occurred. It is worth mentioning that the execution of a JavaScript code execution is itself a macro-task. The event is queued as a macro-task. When a (macro) task, present in the macro-task queue is being executed, new events may be registered and in turn, created and added to the queue.&lt;/li&gt;
+&lt;li&gt;In comparison, the &lt;strong&gt;macro-task queue has a lower priority.&lt;/strong&gt; Macro-tasks include parsing HTML, generating DOM, executing main thread JavaScript code, and other events such as page loading, input, network events, timer events, etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Examples:&lt;/strong&gt; setTimeout, setInterval, setImmediate, requestAnimationFrame, I/O, UI Rendering&lt;/p&gt;
+&lt;h4 id=&quot;microtasks&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#microtasks&quot; aria-label=&quot;microtasks permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Microtasks&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;A micro-task is said to be a function that is executed after the function or program which created it exits and only if the JavaScript execution stack is empty, but before returning control to the event loop being used by the user agent to drive the script’s execution environment. A Micro-task is also capable of en-queuing other micro-tasks.&lt;/li&gt;
+&lt;li&gt;Micro-tasks are often scheduled for things that are required to be completed immediately after the execution of the current script. &lt;strong&gt;On completion of one macro-task, the event loop moves on to the micro-task queue.&lt;/strong&gt; The event loop does not move to the next task outside of the micro-task queue until all the tasks inside the micro-task queue are completed. This implies that the &lt;strong&gt;micro-task queue has a higher priority.&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Once all the tasks inside the micro-task queue are finished, only then does the event loop shift back to the macro-task queue. The primary reason for prioritizing the micro-task queue is to &lt;strong&gt;improve the user experience.&lt;/strong&gt; The micro-task queue is processed after callbacks given that any other JavaScript is not under mid-execution. Micro-tasks include mutation &lt;strong&gt;observer callbacks&lt;/strong&gt; as well as &lt;strong&gt;promise callbacks.&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Examples:&lt;/strong&gt; process.nextTick, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Promises&lt;/a&gt;, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;queueMicrotask&lt;/a&gt;, MutationObserver&lt;/p&gt;
+&lt;p&gt;What’s the output of the following code:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token function&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;timeout&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+Promise&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;promise&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;global ex. context&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&quot;https://www.jsv9000.app/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;online visualization&lt;/a&gt;
+&lt;img src=&quot;https://i.imgur.com/AnGzvBa.png&quot;&gt;
+&lt;img src=&quot;https://i.imgur.com/WB58Y82.png&quot;&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;The answer would be:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;&quot;global ex. contenxt&quot;
+&quot;promise&quot;
+&quot;timeout&quot;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;figure class=&quot;md-figure&quot;&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 866px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 127.91666666666666%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAACXBIWXMAAAsTAAALEwEAmpwYAAADzElEQVRIx51Uy27bVhDVf7e7IkAXRVcNUKBFgqRp4i6cxIDd1GhQ10kVGbEjy40ky3qQokiJokS9KFFv+3TOyGRpLQIkFyDu5X2cmTlzZlI3Nzfg4Bytt0d0pue3dyaTCTzPQ9fvotPpYLVa6X5qNpvpYfQNh8P4G41GGI/Hd87D6RSr9RqLxQLhJNR7fs/HVPbXsp8KwxDX19dqgR64rgvLsmDbNhzHwWAwiM85N9wO7O4QiyXQajfQ6/viNUDHaDxF5O2QOfNxMtTozPF6sLwA2eIJdl//gD8zT2G3DLTbnkagIdPV6EHkKUdyX9dipNXpw2wPcJI/wtP97/Di9Y+w3apEsqEpRVSGRWDy4vu+zguJiWvu0wgvB8IpQ3b8AEG4gGmVhNNADZK6oYAqh82Wi9l8juVyqeBMxmw6kTlQwE3ixptP7s8Wc1TMGjKnZyiUy+gNB5oUvk2NxwEO93YwF4CBAOUKH1Gq1SS8FQbOMcKRoR4cnWdxlP2g67kYOH5/gicvd/Hr3i6KRhVzcUgBlxJOIfMHRp0mSmYdRQErVGoYB30M7FcY+ZdYi8RO8h+RyecVkG86IhWjYcGwGwiEtthDIucu/kW/3xc99ZBOv0O9bmnYp2dnaHttBTENA0a1GqtAgYUiqiHmkEkhP41GQ9FphfojGC9wn2sapT5brVYsYIpvIsLmOZM4HI42gBQjL/DRQizyUaVSQVW8MU0TPfGaD+jNWmK3XQ+tXoC50NByHRF2T/gWXiVRqsOksLfrNlnb/wvbR9nu4qKSxau3D5A+34PXceBFwiZgVBnJEuMe15HQI67qTRfFuoO3uUM8fH4Pzw6+l72S5IDCHmx0mCw1crnhCEoDJaKVcgtYtRwYbR+j6QJl4wKjsa/7dEw5JCB51K7CTAWBuj6l4CURzm0ieM67XteXO2OUKWxRwWW1clfYG66uYy/zb/7CLJyo1Xu/PMLXP/90x0MmaCLgmVwWz/ZfYGf/JUp1A8vFpspSEXccI8no4YP7cK1NdXzz+BG+igBvGwVpCCQKSwRdvCqjcFUSrzu6pyFHYAyJMqEOTdPQxtBqNkXkda1ljsg4JcThti0BGsR8a5aTCdlu+8l1BBZTU36n7ev344cwpOuwH2qDTV761Jc0zPDPC2/w+Pm3+O3gvjTYmkQx1/L9LMCkHterG+mHV1IhYUwHVZDaroxPfUnBX1bL+DudxvvcOdyup/sa8ucCcjBJ/3w4xRPphTsHe7gUTUaJ/SIPOfdFzLaowKib2vYo7DjLXwIaDf6vhQIKnuv/AOd1vAEOHWWgAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/8ac56/task-queue-composition.webp 240w,
+/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/d3be9/task-queue-composition.webp 480w,
+/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/e299d/task-queue-composition.webp 866w&quot;
+              sizes=&quot;(max-width: 866px) 100vw, 866px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/8ff5a/task-queue-composition.png 240w,
+/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/e85cb/task-queue-composition.png 480w,
+/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png 866w&quot;
+            sizes=&quot;(max-width: 866px) 100vw, 866px&quot;
+            type=&quot;image/png&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/andreson-blog/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png&quot;
+            alt=&quot;task queue composition&quot;
+            title=&quot;task queue composition&quot;
+            loading=&quot;lazy&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;figcaption&gt;The recap of Macrotask &amp;#x26; Microtask&lt;/figcaption&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;However, in the real scenario, nuance always exists and it &lt;a href=&quot;https://stackoverflow.com/questions/50754030/event-loop-prefers-microtask-queue-over-callback-queue&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;may not match our understanding &lt;/a&gt; of the rule “Micro Queue is prior than the Marco Queue.”&lt;/em&gt;&lt;/p&gt;
+&lt;h3 id=&quot;odd-case-of-the-combination-of-macrotasks-and-microtasks&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#odd-case-of-the-combination-of-macrotasks-and-microtasks&quot; aria-label=&quot;odd case of the combination of macrotasks and microtasks permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Odd Case of the combination of Macrotasks and Microtasks&lt;/h3&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;display&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;data&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Fetch resolved!&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;printHello&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Callback Time&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;blockExecution&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+  console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Blocking execution...&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;token function&quot;&gt;alert&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Dont close the alert until 2000ms&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; futureData &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;fetch&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;https://jsonplaceholder.typicode.com/todos/1&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+futureData&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;response&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; response&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;json&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;display&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token function&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;printHello&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;2000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;const&lt;/span&gt; p &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Promise&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;resolve&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; reject&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;I&apos;m making a promise...&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;token function&quot;&gt;resolve&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Promise resolved!&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+        console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Promise is made...&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+p&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;then&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;// this is called the success handler&lt;/span&gt;
+    &lt;span class=&quot;token parameter&quot;&gt;result&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;result&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;token function&quot;&gt;blockExecution&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+
+console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;Execution ended!&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Q: What’s the output?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;I&apos;m making a promise...
+Promise is made...
+Blocking execution...
+
+1. Me first !
+   hi back from fetch
+   hello
+   actual output :
+
+2. Me first !
+   hello
+   hi back from fetch&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;A: Both 1, 2 could be the answer!!&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;❗️Note: If the &lt;code class=&quot;language-text&quot;&gt;blockExecution()&lt;/code&gt; function block the thread long enough (over 2000ms), &lt;strong&gt;the &lt;code class=&quot;language-text&quot;&gt;printHello()&lt;/code&gt; function in the “Marco Queue” would be earlier pulled to the “Call Stack” than the &lt;code class=&quot;language-text&quot;&gt;display()&lt;/code&gt; function in the “Micro Queue”&lt;/strong&gt;, so the answer would be:&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;I&apos;m making a promise...
+Promise is made...
+Blocking execution...
+Execution ended!
+Promise resolved!
+------
+Callback Time
+Fetch resolved!&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Vice versa, if the &lt;code class=&quot;language-text&quot;&gt;blockExecution()&lt;/code&gt; function does not block the thread long enough(below 2000ms), the result would be: &lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;I&apos;m making a promise...
+Promise is made...
+Blocking execution...
+Execution ended!
+Promise resolved!
+------
+Fetch resolved!
+Callback Time&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ul&gt;
+&lt;li&gt;Surprisingly, it seems like the first circumstance violates the rule. Nevertheless, both cases strongly prove the truth of the rule. Remember, the “Event Loop” would always try to fill the call stack whenever the stack is empty. If a Microtask does not even finish its job (get a response from &lt;code class=&quot;language-text&quot;&gt;fetch()&lt;/code&gt;), and the Macrotask has completed its work (setTimeout() get executed as soon as the delay time reach 2000ms), the Event Loop would pull the Macrotask first to the call stack. What a workaholic machine, right?😅. &lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;how-to-define-a-blocking-code&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#how-to-define-a-blocking-code&quot; aria-label=&quot;how to define a blocking code permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;How to define a “Blocking” code?&lt;/h2&gt;
+&lt;p&gt;When people say don’t block the event loop, it’s saying don’t put shitty slow code on the call stack because when you do that, the browser can not create a nice fluid UI.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Run the blocking code synchronously. (forEach)
+&lt;img src=&quot;https://i.imgur.com/jzJMbol.jpg&quot;&gt;&lt;/li&gt;
+&lt;li&gt;Run the blocking code asynchronously. (setTimeout)
+&lt;img src=&quot;https://i.imgur.com/BviXHPO.jpg&quot;&gt;&lt;/li&gt;
+&lt;li&gt;Since the render queue get a higher priority than the callback queue (repaint in every 16.6 milliseconds: 60 frames/ per second), the difference between the two is that the asynchronous method gives render a chance within each element.
+&lt;img src=&quot;https://i.imgur.com/Rvv1cUA.jpg&quot;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;conclusion&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#conclusion&quot; aria-label=&quot;conclusion permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;We have learned about the JavaScript event loop which is a constantly running process that coordinates the tasks between the call stack and callback queue to achieve concurrency. &lt;/p&gt;
+&lt;h2 id=&quot;reference&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#reference&quot; aria-label=&quot;reference permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Reference&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=8aGhZQkoFbQ&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Philip Roberts | JSConf EU &lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://levelup.gitconnected.com/asynchronous-javascript-part-3-85390632dd1a&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;https://levelup.gitconnected.com/asynchronous-javascript-part-3-85390632dd1a&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://towardsdev.com/event-loop-in-javascript-672c07618dc9&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;https://towardsdev.com/event-loop-in-javascript-672c07618dc9&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[🥊 Cracking JavaScript Series: JavaScript Engine]]></title><description><![CDATA[AST, Compiler, Interpreter, V8, Call Stack, and Memory Heap]]></description><link>https://blog.hokuan.io/posts/cracking-javascript-series-javascript-engine</link><guid isPermaLink="false">https://blog.hokuan.io/posts/cracking-javascript-series-javascript-engine</guid><pubDate>Mon, 16 Mar 2020 18:32:18 GMT</pubDate><content:encoded>&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; &quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/25e07/javascript-engine-execution-steps.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 53.75%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAEDAv/EABYBAQEBAAAAAAAAAAAAAAAAAAMAAf/aAAwDAQACEAMQAAABrJNiiaLf/8QAGRABAAMBAQAAAAAAAAAAAAAAAQACERIi/9oACAEBAAEFAj0WrhBcVzpn/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFREBAQAAAAAAAAAAAAAAAAAAEBH/2gAIAQIBAT8Bh//EABcQAAMBAAAAAAAAAAAAAAAAAAARMSD/2gAIAQEABj8Co8U//8QAGxABAAICAwAAAAAAAAAAAAAAAQARECExYYH/2gAIAQEAAT8hTy6egg7F4NQY6ix82if/2gAMAwEAAgADAAAAEGDP/8QAFhEBAQEAAAAAAAAAAAAAAAAAARAR/9oACAEDAQE/EBxn/8QAFhEBAQEAAAAAAAAAAAAAAAAAACFh/9oACAECAQE/EMK//8QAHBABAAICAwEAAAAAAAAAAAAAAQARIVEQMUGB/9oACAEBAAE/EEmG4QuHyOguBPA1ROhBTwj6F0KNE//Z&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/8ac56/javascript-engine-execution-steps.webp 240w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/d3be9/javascript-engine-execution-steps.webp 480w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/e46b2/javascript-engine-execution-steps.webp 960w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/f992d/javascript-engine-execution-steps.webp 1440w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/882b9/javascript-engine-execution-steps.webp 1920w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/b8f0e/javascript-engine-execution-steps.webp 3358w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/09b79/javascript-engine-execution-steps.jpg 240w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/7cc5e/javascript-engine-execution-steps.jpg 480w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg 960w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/644c5/javascript-engine-execution-steps.jpg 1440w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/0f98f/javascript-engine-execution-steps.jpg 1920w,
+/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/25e07/javascript-engine-execution-steps.jpg 3358w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/jpeg&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/andreson-blog/static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg&quot;
+            alt=&quot;javascript engine execution steps&quot;
+            title=&quot;javascript engine execution steps&quot;
+            loading=&quot;lazy&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h3 id=&quot;history&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#history&quot; aria-label=&quot;history permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;History&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The first JavaScript Engine was created by &lt;a href=&quot;https://zh.wikipedia.org/wiki/%E5%B8%83%E8%98%AD%E7%99%BB%C2%B7%E8%89%BE%E5%85%8B&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Brendan Eich&lt;/a&gt; in 1995 for the Netscape Navigator web browser. It called &lt;a href=&quot;https://zh.wikipedia.org/wiki/SpiderMonkey&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;“SpiderMonkey”&lt;/a&gt; which is still used by the Firefox browser now.&lt;/li&gt;
+&lt;li&gt;V8 Engine (Wrote in C++) was developed by Google in 2008 because of building faster browser engine in order to control people to use their search engine. However, there is not only one JavaScript Engine in the world.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;ast-abstract-syntax-tree&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#ast-abstract-syntax-tree&quot; aria-label=&quot;ast abstract syntax tree permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;AST (Abstract Syntax Tree)&lt;/h3&gt;
+&lt;p&gt;The word “Parser” mentioned above actually could break down in three steps below.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/kvJujij.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Fortunately, we don’t need to go through all its phases, converting HHL (High-level language) code to bits. We are interested in Lexical and Syntax Analysis only. These two steps play the main role in generating AST from code.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Lexical analyzer (a.k.a. scanner)&lt;/p&gt;
+&lt;p&gt;First step. Lexical analyzer, also called scanner, it reads a stream of characters (our code) and combines them into tokens using defined rules. Also, it will remove white space characters, comments, etc. In the end, the entire string of code will be split into a list of tokens.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;42&lt;/span&gt;
+
+&lt;span class=&quot;token comment&quot;&gt;// -------\&amp;lt;lexical analyzer\&gt;-------&gt;&lt;/span&gt;
+
+&lt;span class=&quot;token punctuation&quot;&gt;[&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;identifier&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;var&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;whitespace&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos; &apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;    
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;identifier&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;a&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;whitespace&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos; &apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;operator&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;=&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;whitespace&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos; &apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;num&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;42&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;type&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;sep&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;value&lt;span class=&quot;token operator&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;;&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/hefucSh.jpg&quot;&gt;&lt;/p&gt;
+&lt;p&gt;When the lexical analyzer read the source-code, it scans the code letter by letter; and when it encounters a whitespace, operator symbol, or special symbols, it decides that a word is completed.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Syntax analyzer （parser）&lt;/p&gt;
+&lt;p&gt;Second step. Syntax analyzer, also called parser, will take a plain list of tokens after Lexical Analysis and turn it into a tree representation, validating language syntax and throwing syntax errors, if such happened.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/eaCICbS.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;While generating a tree, some parsers omit unnecessary tokens (like redundant brackets for example) so they create ‘Abstract Syntax Tree’ — it is not 100% of code match, but enough to know how to deal with it. On another hand, parsers which fully cover all code structure generate tree called ‘Concrete Syntax Tree’.&lt;/p&gt;
+&lt;p&gt;You can use &lt;a href=&quot;https://astexplorer.net/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;AST explorer&lt;/a&gt; to see how a parser converts JavaScript into a syntax tree.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;interpreter--compiler&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#interpreter--compiler&quot; aria-label=&quot;interpreter  compiler permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Interpreter &amp;#x26; Compiler&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Interpreter_(computing)&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Interpreter (From Wiki)&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;In computer science, an interpreter is a computer program that directly executes, i.e. performs, instructions written in a programming or scripting language, without previously compiling them into a machine language program.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Pros (Take JavaScript as an example.)&lt;/p&gt;
+&lt;p&gt;An interpreter is able to interpret JS directly and run as fast as it can.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Cons&lt;/p&gt;
+&lt;p&gt;The more JS code is written, the slower running speed it can be. Without compiler, when you are running redundant code like the same code in a for loop, it will execute them over and over again, even though the result of the loop gives the same.&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token comment&quot;&gt;// With interpreter&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;sumCalulation&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;x&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; y&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; x &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; y&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;token comment&quot;&gt;/*** 
+     * With only interpreter, the code will be running 1000 times,
+     * though the result would always be 9.
+    ***/&lt;/span&gt;
+    &lt;span class=&quot;token function&quot;&gt;sumCalulation&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Compiler&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Compiler (From Wiki)&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The name compiler is primarily used for programs that translate source code from a high-level programming language to a lower level language (e.g., assembly language, object code, or machine code) to create an executable program.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Pros&lt;/p&gt;
+&lt;p&gt;The compiler will do optimization with the source code.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Cons&lt;/p&gt;
+&lt;p&gt;The compiler takes a little bit longer to get up and to run.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;  &lt;span class=&quot;token comment&quot;&gt;// With compiler&lt;/span&gt;
+    &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;sumCalulation&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;x&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; y&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token keyword&quot;&gt;return&lt;/span&gt; x &lt;span class=&quot;token operator&quot;&gt;+&lt;/span&gt; y&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;token keyword&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;let&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i &lt;span class=&quot;token operator&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1000&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt; i&lt;span class=&quot;token operator&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;token comment&quot;&gt;// sumCalulation(5,4); it can be replace with 9&lt;/span&gt;
+        &lt;span class=&quot;token number&quot;&gt;9&lt;/span&gt;
+    &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🤔 &lt;strong&gt;Self-question&lt;/strong&gt;
+&lt;br&gt;Is there a way we can get the best of both?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Jit Compiler (Just-in-time compilation)&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/NXZcd2t.png&quot;&gt;
+&lt;em&gt;In 2017-06-05, Google launched the Ignition+TurboFan pipeline in Chrome 59&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/byH4LW8.png&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://v8.dev/docs/ignition&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Ignition&lt;/a&gt; (Interpreter)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;V8 features an interpreter called Ignition. Ignition is a fast low-level register-based interpreter written using the backend of TurboFan, and it’s designed for reducing memory cost in a mobile device. Because in the past, Full-Codegen doesn’t really apply any serious optimizations (it was supposed to generate code as quickly as possible), it was used to taking 30% of the managed memory in typical web applications was used by Code objects.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://v8.dev/docs/turbofan&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;TurboFan&lt;/a&gt; (Compilers)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Replace Crankshaft with TurboFan which is based on &lt;a href=&quot;https://darksi.de/d.sea-of-nodes/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;sea-of-nodes&lt;/a&gt; architecture. It’s designed for solving &lt;a href=&quot;https://benediktmeurer.de/2017/03/01/v8-behind-the-scenes-february-edition&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Performance Cliffs&lt;/a&gt;, and become more adaptable to add new ECMAScript function in the future.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/TerwGMr.png&quot;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🤔 &lt;strong&gt;Self-question&lt;/strong&gt;
+&lt;br&gt;Is JavaScript an interpreted language?&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;optimized-code&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#optimized-code&quot; aria-label=&quot;optimized code permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Optimized Code&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://richardartoul.github.io/jekyll/update/2015/04/26/hidden-classes.html&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Hidden Class&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;Point&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token parameter&quot;&gt;x&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;y&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;x &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; x&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;    &lt;span class=&quot;token keyword&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;y &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; y&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;  &lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;6&lt;/span&gt;  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; obj1 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Point&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;7&lt;/span&gt;  &lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; obj2 &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token keyword&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;token class-name&quot;&gt;Point&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;token number&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;8&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;9&lt;/span&gt;  obj1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt; obj1&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;b &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;11&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;12&lt;/span&gt; obj2&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;b &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token number&quot;&gt;13&lt;/span&gt; obj2&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Up until line 8, &lt;code class=&quot;language-text&quot;&gt;obj1&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;obj2&lt;/code&gt; shared the same hidden class. However, since properties a and b were added in opposite orders, &lt;code class=&quot;language-text&quot;&gt;obj1&lt;/code&gt; and &lt;code class=&quot;language-text&quot;&gt;obj2&lt;/code&gt; end up with different hidden classes as a result of following separate transition paths.&lt;/p&gt;
+&lt;p&gt;ps: Because JavaScript is a dynamic language, we are able to add new properties without define them in constructure previously, and the engine will create hidden class to deal with it during run time.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/yOMGnvY.jpg&quot;&gt;&lt;/p&gt;
+&lt;p&gt;If you’ve been following along closely, your first instinct might be to think that obj1 and obj2 having two different hidden classes isn’t a big deal. As long as each of their hidden classes stores the appropriate offsets, accessing their properties should be just as fast as if they shared a hidden class right?&lt;/p&gt;
+&lt;p&gt;In order to understand why this isn’t true, we need to take a look at another optimization technique employed by V8 called inline caching.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/sq/JSIL/wiki/Optimizing-dynamic-JavaScript-with-inline-caches&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Inline Cache&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Whenever a method is called on a specific object, the V8 engine has to perform a lookup to that objects hidden class to determine the offset for accessing a specific property. After two successful calls of the same method to the same hidden class, V8 omits the hidden class lookup and simply adds the offset of the property to the object pointer itself. For all future calls of that method, the V8 engine assumes that the hidden class hasn’t changed, and jumps directly into the memory address for a specific property using the offsets stored from previous lookups; this greatly increases execution speed.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/ftYBlzp.jpg&quot;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🤔 &lt;strong&gt;Self-question&lt;/strong&gt;
+&lt;br&gt;Why not just use machine code from the beginning? So they don’t have to worry about interpreter, compiler, JIT compliler stuff&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;webassembly&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#webassembly&quot; aria-label=&quot;webassembly permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;&lt;a href=&quot;https://webassembly.org/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;WebAssembly&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;Nowadays, browsers still have different ways of doing things like JS engine, but what if there is a standard binary executable format? Here comes “WebAssembly”.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/1ZEO5Yv.png&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;call-stack--memory-heap&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#call-stack--memory-heap&quot; aria-label=&quot;call stack  memory heap permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Call Stack &amp;#x26; Memory Heap&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;h4 id=&quot;call-stack-first-in-last-out-mode&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#call-stack-first-in-last-out-mode&quot; aria-label=&quot;call stack first in last out mode permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Call Stack (First in last out mode)&lt;/h4&gt;
+&lt;p&gt;Call Stack mainly is to keep track of the point to which each active subroutine should return control when it finishes executing.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;h4 id=&quot;memory-heap&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#memory-heap&quot; aria-label=&quot;memory heap permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Memory Heap&lt;/h4&gt;
+&lt;p&gt;As a place to allocate memory, use memory, and release memory&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/n3DX5ap.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;Call stack now has the anonymous function which was the global execution context. When running the &lt;code class=&quot;language-text&quot;&gt;calculate()&lt;/code&gt; function, it’s just added on the top of the stack.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/fWiOrq9.jpg&quot;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;h4 id=&quot;stack-overflow&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#stack-overflow&quot; aria-label=&quot;stack overflow permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Stack Overflow&lt;/h4&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/dadXXGw.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;It’s caused when a program writes more data to a buffer located on the stack than what is actually allocated for that buffer. It usually happened in infinite recursion function, or just because of too many stacks are put.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;h4 id=&quot;memory-leaks&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#memory-leaks&quot; aria-label=&quot;memory leaks permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Memory Leaks&lt;/h4&gt;
+&lt;p&gt;It’s a type of resource leak that occurs when a computer program incorrectly manages memory allocations[1] in such a way that memory which is no longer needed is not released.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/jePtv9a.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;The garbage collection wasn’t really working because we had this array we were using this array over and over until we crashed our program.&lt;/p&gt;
+&lt;p&gt;Three typically reasons cause memory leaks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Global variable&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; a &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; b &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; c &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;token number&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token operator&quot;&gt;...&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Event listeners&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token keyword&quot;&gt;var&lt;/span&gt; element &lt;span class=&quot;token operator&quot;&gt;=&lt;/span&gt; document&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;getElementById&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;button&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+element&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;addEventListener&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&apos;click&apos;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;,&lt;/span&gt; onclick&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// You have better unregister the event listener when things are done.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;SetInterval&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token function&quot;&gt;setInterval&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;token operator&quot;&gt;=&gt;&lt;/span&gt; &lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;//...&lt;/span&gt;
+&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;token comment&quot;&gt;// You have better unregister the event listener when things are done.&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;h4 id=&quot;garbage-collection&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#garbage-collection&quot; aria-label=&quot;garbage collection permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Garbage Collection&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://liujiacai.net/blog/2018/07/08/mark-sweep/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Mark and Sweep Algorithm&lt;/a&gt; (Mainstream)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/NUiwqfV.gif&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Advantages of Mark and Sweep Algorithm&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It handles the case with cyclic references, even in case of a cycle, this algorithm never ends up in an infinite loop.&lt;/li&gt;
+&lt;li&gt;There are no additional overheads incurred during the execution of the algorithm.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Disadvantages of Mark and Sweep Algorithm&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The main disadvantage of the mark-and-sweep approach is the fact that that normal program execution is suspended while the garbage collection algorithm runs.&lt;/li&gt;
+&lt;li&gt;Other disadvantage is that, after the Mark and Sweep Algorithm is run several times on a program, reachable objects end up being separated by many, small unused memory regions. Look at the below figure for better understanding.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/P1GAEzC.png&quot;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;🤔 &lt;strong&gt;Self-question&lt;/strong&gt;
+&lt;br&gt;How to deal with memory &lt;a href=&quot;https://en.wikipedia.org/wiki/Fragmentation_(computing)&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;fragmentation&lt;/a&gt;?
+&lt;br&gt;Take a look for &lt;a href=&quot;https://www.zhihu.com/question/51836333/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Memory paging.&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;</content:encoded></item><item><title><![CDATA[The Practical Experience in Implementing Objectives and Key Results(OKRs) from Dcard CEO and Gipi.]]></title><description><![CDATA[OKR, Strategy Map, Management, and Leadership]]></description><link>https://blog.hokuan.io/posts/the-practical-experience-in-implementing-objectives-and-key-results-from-real-cases</link><guid isPermaLink="false">https://blog.hokuan.io/posts/the-practical-experience-in-implementing-objectives-and-key-results-from-real-cases</guid><pubDate>Tue, 25 Feb 2020 15:28:00 GMT</pubDate><content:encoded>&lt;h2 id=&quot;前文&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%89%8D%E6%96%87&quot; aria-label=&quot;前文 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;前文&lt;/h2&gt;
+&lt;p&gt;在公司邁入第三年的因緣際會下，開始帶領公司前端團隊制定策略目標，進而接觸到了管理方法，再使用了兩年的 Scrum 後，
+逐漸發現除了顧好工程團隊的開發週期，更重要的是，團隊的努力與公司目標是否密切相關，而要量化這樣的關係，導入更具目標性的管理框架可為一解決方案。&lt;/p&gt;
+&lt;p&gt;我第一次被推坑 OKRs 是因為這本書「&lt;a href=&quot;https://www.books.com.tw/products/F014212244&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Measure what matters&lt;/a&gt;」，
+其中講述了創投家 John Doerr 從習得 OKRs (由 Intel 創辦人之一 Andy Grove 發起)後，如何在1999年 Google 成立的初期說服（強迫） Larry Page、Sergey Brin 導入 OKRs 的管理方式，
+此舉間接隱含了企業的管理方式對於投資人來說，甚至比商業模式更為重要，因為這關係到公司「看似完美的營收模式」是否「可被執行與達成」。非常推薦大家看此書，對 OKRs 可有近一步了解！&lt;/p&gt;
+&lt;p&gt;本篇文章分為三個主題：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;#%E7%AE%A1%E7%90%86%E5%93%B2%E5%AD%B8%E7%AF%87&quot;&gt;管理哲學篇 by 游舒帆&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#%E7%AE%A1%E7%90%86%E5%AF%A6%E5%8B%99%E7%AF%87&quot;&gt;管理實務篇 by Dcard CEO 林裕欽&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;#qa&quot;&gt;Q&amp;#x26;A&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;非常感謝「&lt;a href=&quot;https://meet.bnext.com.tw/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Meet 創業小聚&lt;/a&gt;」提供本次交流，讓大家一同學習 OKRs 的實務！&lt;/p&gt;
+&lt;h1 id=&quot;管理哲學篇&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E7%AE%A1%E7%90%86%E5%93%B2%E5%AD%B8%E7%AF%87&quot; aria-label=&quot;管理哲學篇 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;管理哲學篇&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;講者：游舒帆
+&lt;br&gt;身份：商院思維學院院長，教商業管理，策略顧問，數位轉型顧問
+&lt;br&gt;經驗： 13 年制定、執行年度計畫經驗&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;壹、常見導入-okr-錯誤認知&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%A3%B9%E3%80%81%E5%B8%B8%E8%A6%8B%E5%B0%8E%E5%85%A5-okr-%E9%8C%AF%E8%AA%A4%E8%AA%8D%E7%9F%A5&quot; aria-label=&quot;壹、常見導入 okr 錯誤認知 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;壹、常見導入 OKR 錯誤認知&lt;/h2&gt;
+&lt;h3 id=&quot;1-老闆視角&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-%E8%80%81%E9%97%86%E8%A6%96%E8%A7%92&quot; aria-label=&quot;1 老闆視角 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;1. 老闆視角&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;第一、希望公司上下一心，一起朝目標邁進&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;潛台詞：員工應該更理解公司目標,應該更能換位思考&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第二、希望提高員工自主性，然後自我驅動&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;潛台詞：員工積極性不夠,只想做 KPI 規定的事情&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第三、希望能藉此獲知每個員工的工作貢獻度&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;潛台詞：我不知道員工的貢獻度多少，更不知道有多少人在偷懶&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;2-員工視角&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-%E5%93%A1%E5%B7%A5%E8%A6%96%E8%A7%92&quot; aria-label=&quot;2 員工視角 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;2. 員工視角&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;第一、OKR就是要自下而上制定啊&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;潛台詞：老闆別亂來指派任務了，我們在第一線我們最了解&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;第二、OKR就是做我們想做的事啊&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;潛台詞：終於擺脫KPI了&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;3-netflix-文化---自由與責任&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-netflix-%E6%96%87%E5%8C%96---%E8%87%AA%E7%94%B1%E8%88%87%E8%B2%AC%E4%BB%BB&quot; aria-label=&quot;3 netflix 文化   自由與責任 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;3. Netflix 文化 - 自由與責任&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;老闆看到的是&lt;strong&gt;責任&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;員工看到的是&lt;strong&gt;自由&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;4-為何-1999-年-intel-就發明了-okr，到-2019-年在台灣才爆紅&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#4-%E7%82%BA%E4%BD%95-1999-%E5%B9%B4-intel-%E5%B0%B1%E7%99%BC%E6%98%8E%E4%BA%86-okr%EF%BC%8C%E5%88%B0-2019-%E5%B9%B4%E5%9C%A8%E5%8F%B0%E7%81%A3%E6%89%8D%E7%88%86%E7%B4%85&quot; aria-label=&quot;4 為何 1999 年 intel 就發明了 okr，到 2019 年在台灣才爆紅 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;4. 為何 1999 年 Intel 就發明了 OKR，到 2019 年在台灣才爆紅&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;因為管理有問題，所以需要尋求新的方法來解套，如同敏捷開發
+&lt;img src=&quot;https://i.imgur.com/uVhb7tL.png&quot;&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;溝通目標有問題&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;下層不理解上層想做的事，而直接被壓 deadline，最後完成時，管理層又覺得員工沒達到想要的結果，造成惡性循環，&lt;strong&gt;其根本原因歸咎於上下層目標傳遞不透明，管理者必須要很清楚由上到下的連動關係與目的，讓每個人都知道。&lt;/strong&gt;
+&lt;img src=&quot;https://i.imgur.com/if2buHr.png&quot;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;貳、導入okr的4個步驟（國內實務上，非工具書內容）&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E8%B2%B3%E3%80%81%E5%B0%8E%E5%85%A5okr%E7%9A%844%E5%80%8B%E6%AD%A5%E9%A9%9F%EF%BC%88%E5%9C%8B%E5%85%A7%E5%AF%A6%E5%8B%99%E4%B8%8A%EF%BC%8C%E9%9D%9E%E5%B7%A5%E5%85%B7%E6%9B%B8%E5%85%A7%E5%AE%B9%EF%BC%89&quot; aria-label=&quot;貳、導入okr的4個步驟（國內實務上，非工具書內容） permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;貳、導入OKR的4個步驟（國內實務上，非工具書內容）&lt;/h2&gt;
+&lt;p&gt;如果一開始沒訂定好，後續都不用做。&lt;/p&gt;
+&lt;h3 id=&quot;1-使命、願景聚焦（一般公司最常忘記的）&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-%E4%BD%BF%E5%91%BD%E3%80%81%E9%A1%98%E6%99%AF%E8%81%9A%E7%84%A6%EF%BC%88%E4%B8%80%E8%88%AC%E5%85%AC%E5%8F%B8%E6%9C%80%E5%B8%B8%E5%BF%98%E8%A8%98%E7%9A%84%EF%BC%89&quot; aria-label=&quot;1 使命、願景聚焦（一般公司最常忘記的） permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;1. 使命、願景聚焦（一般公司最常忘記的）&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;使命&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;建立公司第一天，為何而存在，馬雲：「使命什麼時候發揮作用？在公司內部發生重大利益決定，生死之關，到底幹這個還是幹那條路的時候，使命發生至大的作用」。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;願景&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;將來會變什麼樣子，如果不知道公司願景的人應徵工作就不要招聘他，因為他只在意下一個月工資在哪，例如：10年、20年後，公司會變成什麼樣子，他的願景是跟「使命」相依關聯的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;價值觀&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在同意使命、願景的前提下，我們必須「&lt;strong&gt;約法三章&lt;/strong&gt;」，是創始人們、第一波員工近來時，大家一起面對面討論而訂定的，也是確立公司發展方向的第一步，例如：我們是做什麼，不做什麼。價值觀同時是績效考核重要一環，在工作績效與公司價值觀的正確性上達標，才是我們想要獎勵的對象。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;總結：在公司中，制度重要還是文化重要？&lt;strong&gt;文化是核心&lt;/strong&gt;，制度僅是用來規範、強化公司文化價值觀的一種手段，當文化做得好，制度相較下也會訂得少。
+eg: 阿里巴巴：「天下沒有難做的生意」
+ps: &lt;a href=&quot;http://vodcdn.video.taobao.com/oss/ali-video/0a04bd23c2a56629d7890789897ac329/video.mp4&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;馬雲七分鐘內解釋使命、願景、價值觀&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;2-設定戰略目標&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-%E8%A8%AD%E5%AE%9A%E6%88%B0%E7%95%A5%E7%9B%AE%E6%A8%99&quot; aria-label=&quot;2 設定戰略目標 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;2. 設定戰略目標&lt;/h3&gt;
+&lt;p&gt;透過「&lt;a href=&quot;https://dotblogs.com.tw/jimmyyu/2017/06/28/strategy-map&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;策略地圖（Strategy Map）&lt;/a&gt;」來訂定策略規劃目標&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/EmioUvr.png&quot;&gt;
+範例圖如下：
+&lt;img src=&quot;https://i.imgur.com/4XjUvxA.png&quot;&gt;
+「策略要在長短期對立力量中取得平衡」，指的是有時企業會為了短期的價值而犧牲長期價值，例如刪減成本美化財務數據，但實際上降低了客戶服務品質；追求短期的財務目標，而侵蝕了長期的收益。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;財務構面
+財務指標是一種落後指標，因為那是執行到最後才看到的結果，為了改善經營狀況，我們必須要往前看，去看看其他領先指標以及影響領先指標的工作流程。&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;客戶構面
+在要達成上述財務目標的前提下，我們需要提供給顧客什麼樣的價值，這邊會談到對客戶的價值主張。常見的四種價值主張與客戶策略：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;(1)低總成本&lt;/li&gt;
+&lt;li&gt;(2)產品領先&lt;/li&gt;
+&lt;li&gt;(3)完整的顧客解決方案&lt;/li&gt;
+&lt;li&gt;(4)系統鎖定&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;流程構面
+對客戶的價值是由一連串的內部事務流程所創造，你為了強化對客戶的服務，例如：貨物的配送時間從24小時縮短到12小時。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;(1)營運管理流程：包含供應、生產、分銷與風險管理&lt;/li&gt;
+&lt;li&gt;(2)顧客管理流程：包含客戶的選擇、招納、維繫與成長&lt;/li&gt;
+&lt;li&gt;(3)創新流程：包含標定機會、選定產品組織、設計/開發與上市&lt;/li&gt;
+&lt;li&gt;(4)法規與社會流程：包含環境、安全與健康、招募與社區&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;許多公司的策略規劃在財務或客戶構面做的都很確實，但在內部流程構面往往做的相對差勁，但其實內部流程構面與策略執行成效的關聯性更強，因為流程才是串連起價值的關鍵活動。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;學習成長
+談完前三個構面，一般來說我們想做與該做的事情應該大致抵定了，但&lt;strong&gt;組織是否已經具備做好上述事情該具備的能力呢&lt;/strong&gt;？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;人力資本
+我們的員工是否具備足夠的專業知識與技能？生產力是否有缺口？&lt;/li&gt;
+&lt;li&gt;資訊資本
+我們的系統是否能滿足新的作業流程？&lt;/li&gt;
+&lt;li&gt;組織資本
+我們的組織架構，團隊協作是否能因應新的目標做高效的協同與運作？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;當我們回過頭檢視組織能力時，可能會發現目標很棒很清晰，但我們卻做不到，這往往是因為在策略形成階段我們沒有將組織能力這種納入評估，而學習成長構面則是幫我們盤點出為了支撐前三個構面，如何善用組織中的無形資產，讓組織能力提升以跟上企業的目標。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;探討完策略地圖，再將 OKR 放入各項位置，會讓營運團隊更了解問題的癥結與需求。&lt;/p&gt;
+&lt;h3 id=&quot;2-1-平衡計分卡-（如果策略地圖制定過程夠熟可略）&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-1-%E5%B9%B3%E8%A1%A1%E8%A8%88%E5%88%86%E5%8D%A1-%EF%BC%88%E5%A6%82%E6%9E%9C%E7%AD%96%E7%95%A5%E5%9C%B0%E5%9C%96%E5%88%B6%E5%AE%9A%E9%81%8E%E7%A8%8B%E5%A4%A0%E7%86%9F%E5%8F%AF%E7%95%A5%EF%BC%89&quot; aria-label=&quot;2 1 平衡計分卡 （如果策略地圖制定過程夠熟可略） permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;2-1. 平衡計分卡 （如果策略地圖制定過程夠熟可略）&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/W8JGTVR.jpg&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&quot;https://balancedscorecards.com/balanced-scorecard/#learn-objectives&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;平衡計分卡(balanced scorecard，簡稱BSC)&lt;/a&gt; 是以財務、顧客、內部流程、學習與成長四個構面，平衡地評估組織的績效，並連結目的、評量、目標及行動的系統，轉化成可行方案的一種策略管理的工具。通常與策略地圖一同進行，範例如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;平衡計分卡
+&lt;img src=&quot;https://i.imgur.com/PGJGFHL.png&quot;&gt;&lt;/li&gt;
+&lt;li&gt;策略地圖
+&lt;img src=&quot;https://i.imgur.com/G9H5yNN.png&quot;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;有些流派會將 「&lt;a href=&quot;https://hackmd.io/@Y7JYCS2wTFazh_x6VzfZhQ/ryN78760B&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Business Model Canvas&lt;/a&gt;」 與 策略地圖中的「平衡計分卡」綁定，參考圖如下
+&lt;img src=&quot;https://i.imgur.com/VQb2X2N.jpg&quot;&gt;
+&lt;img src=&quot;https://i.imgur.com/eaxflcR.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;一切只要合乎公司策略制定邏輯即可，並沒有哪種比較好或壞之差異，個人覺得可透過 Business Model Canvas 幫助公司以清晰邏輯拆分各項資源後，再將各資源內容轉化為第一種策略地圖中各個層級內的項目。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;3-展開＆對齊&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-%E5%B1%95%E9%96%8B%EF%BC%86%E5%B0%8D%E9%BD%8A&quot; aria-label=&quot;3 展開＆對齊 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;3. 展開＆對齊&lt;/h3&gt;
+&lt;p&gt;&lt;figure class=&quot;md-figure&quot;&gt;&lt;img src=&quot;https://i.imgur.com/FzIGICQ.jpg&quot;&gt;&lt;figcaption&gt;實際 200 人的公司，做完展開後的圖表並沒有想像中的複雜。&lt;/figcaption&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;如何展開&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;「客戶構面」應該關聯「財務構面」，例如財務構面規劃 6000萬營收，但從客戶構面三件事情加起來根本搞不定 6000萬，代表此策略是有問題的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如何對齊&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;例如在負責其中一個客戶構面的KR（2000萬），你有跟其他同層的項目負責人溝通過了嗎？彼此需要的資源是否重複或競爭，兩者OKR是否有衝突？如果一起合作是否能達到更多的效益5000萬？ 對齊會是 OKR 中最「重要」，也是最花時間爭論的，所謂爭論是探討是否合乎O、該項目是否可實際執行，而非項目上的討價還價，例如誰多背1000萬誰少背責任。
+&lt;img src=&quot;https://i.imgur.com/BVQydmM.png&quot;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;4-年季月okr展開&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#4-%E5%B9%B4%E5%AD%A3%E6%9C%88okr%E5%B1%95%E9%96%8B&quot; aria-label=&quot;4 年季月okr展開 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;4. 年/季/月OKR展開&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/jiFiLt7.jpg&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如何展開
+季度 OKR，並非單純把年度 OKR 拆成四份，應反向思考，在設定年度O時，可考量月度 OKR 可達成多少，再反推估季度目標。&lt;/li&gt;
+&lt;li&gt;計畫的目的
+並不是保證計畫不會變，而是讓大家在當下看得夠清楚，且在保持一致的共識下，評估是否偏離計畫或調整的可能性。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;okr-工具定位&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#okr-%E5%B7%A5%E5%85%B7%E5%AE%9A%E4%BD%8D&quot; aria-label=&quot;okr 工具定位 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;OKR 工具定位&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;OKR 的導入強化的是「組織能力」，而非一種績效考核工具，或是直接讓團隊效率變高的魔術。&lt;/li&gt;
+&lt;li&gt;扁平化也非指的是從自己往上數的層數有多少，而是整體的管理成本可以降低多少，資訊透明程度可以提升多少。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;組織能力的4個維度&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E7%B5%84%E7%B9%94%E8%83%BD%E5%8A%9B%E7%9A%844%E5%80%8B%E7%B6%AD%E5%BA%A6&quot; aria-label=&quot;組織能力的4個維度 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;組織能力的4個維度&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/LLsecAO.jpg&quot;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;資訊流動&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;重要的資料必須掌握在對的人身上。例如財務需要知道每月支出狀況，但資料不透明的話，會喪失判斷的準確度，行銷端也是，沒建立追蹤指標，如何判定決策的結果。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;能力培養&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;當重要資料交到手上後，該人是否有能力做出正確的決策？&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;權力轉移&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;當有了 Data、能力，但你有適當的理由（權力）作出決策嗎？ 如果不行，代表決策權還是在錯的人身上。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;績效（報酬）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;要鼓勵實際貢獻與公司目標一致的，並非獎勵 Title，報酬指的就是獎金，或是公開表揚。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;  達成這四點才有辦法做到自發性的 Bottom Up.&lt;/p&gt;
+&lt;h2 id=&quot;參、導入-okr-的五個建議-（to-ceo）&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%8F%83%E3%80%81%E5%B0%8E%E5%85%A5-okr-%E7%9A%84%E4%BA%94%E5%80%8B%E5%BB%BA%E8%AD%B0-%EF%BC%88to-ceo%EF%BC%89&quot; aria-label=&quot;參、導入 okr 的五個建議 （to ceo） permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;參、導入 OKR 的五個建議 （To CEO）&lt;/h2&gt;
+&lt;h3 id=&quot;1-別抗拒談策略&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-%E5%88%A5%E6%8A%97%E6%8B%92%E8%AB%87%E7%AD%96%E7%95%A5&quot; aria-label=&quot;1 別抗拒談策略 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;1. 別抗拒談策略&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;策略應是透明且有邏輯的，當 CEO 對於策略的保密或不談，會造成底下員工對於策略整體了解度下降，而在執行中偏離想達成的目標。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;2-建立清晰的脈絡&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-%E5%BB%BA%E7%AB%8B%E6%B8%85%E6%99%B0%E7%9A%84%E8%84%88%E7%B5%A1&quot; aria-label=&quot;2 建立清晰的脈絡 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;2. 建立清晰的脈絡&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;所謂脈絡是 「管理脈絡」，導入OKR後，中間每層的關聯性是否講得出來，如果老闆無法一個人講得出來，則需找其他組織伙伴一起，不然大家都從裡面插了很多事情進來做，但大家都不知道為何而戰，就會出現許多紛爭。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;3-經常與團隊對齊&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-%E7%B6%93%E5%B8%B8%E8%88%87%E5%9C%98%E9%9A%8A%E5%B0%8D%E9%BD%8A&quot; aria-label=&quot;3 經常與團隊對齊 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;3. 經常與團隊對齊&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;當每個月都與員工進行1對1面談，就可以越早進行反饋，在季末進行考核時，對於員工的衝擊也不會太大，例如員工會OS平常老闆都沒說我不好啊，怎麼突然差評。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;4-別作為績效考核工具&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#4-%E5%88%A5%E4%BD%9C%E7%82%BA%E7%B8%BE%E6%95%88%E8%80%83%E6%A0%B8%E5%B7%A5%E5%85%B7&quot; aria-label=&quot;4 別作為績效考核工具 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;4. 別作為績效考核工具&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;目標是會變的，當目標變了以後，再拿此項 KR 當考核，就會有問題， OKR 是評估計畫與執行的方向是否一致或合適，但是可以做層績效參考的其中一種。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;5-殷實執行但保持彈性&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#5-%E6%AE%B7%E5%AF%A6%E5%9F%B7%E8%A1%8C%E4%BD%86%E4%BF%9D%E6%8C%81%E5%BD%88%E6%80%A7&quot; aria-label=&quot;5 殷實執行但保持彈性 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;5. 殷實執行但保持彈性&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;當目標需要改動時，利益相關人需一起討論，並非不可變動的。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;管理實務篇&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E7%AE%A1%E7%90%86%E5%AF%A6%E5%8B%99%E7%AF%87&quot; aria-label=&quot;管理實務篇 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;管理實務篇&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;講者：林裕欽
+&lt;br&gt;身份： Dcard CEO ＆ 創辦人
+&lt;br&gt;經驗： 台灣大學資管系畢&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2 id=&quot;壹、導入的好處&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%A3%B9%E3%80%81%E5%B0%8E%E5%85%A5%E7%9A%84%E5%A5%BD%E8%99%95&quot; aria-label=&quot;壹、導入的好處 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;壹、導入的好處&lt;/h2&gt;
+&lt;h3 id=&quot;四大好處&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%9B%9B%E5%A4%A7%E5%A5%BD%E8%99%95&quot; aria-label=&quot;四大好處 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;四大好處&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/31kFVSu.jpg&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;使命願景的重要性與結構&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E4%BD%BF%E5%91%BD%E9%A1%98%E6%99%AF%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7%E8%88%87%E7%B5%90%E6%A7%8B&quot; aria-label=&quot;使命願景的重要性與結構 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;使命願景的重要性與結構&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/1zft0jr.jpg&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使命願景與執行面還是有很大的落差，因此需要一層來翻譯，就是「戰略目標」&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;組織架構的改變&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E7%B5%84%E7%B9%94%E6%9E%B6%E6%A7%8B%E7%9A%84%E6%94%B9%E8%AE%8A&quot; aria-label=&quot;組織架構的改變 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;組織架構的改變&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;內部流程的更新
+&lt;img src=&quot;https://i.imgur.com/tN8hs8j.jpg&quot;&gt;&lt;/li&gt;
+&lt;li&gt;OKR 層級的拆解
+&lt;img src=&quot;https://i.imgur.com/E7koMHh.jpg&quot;&gt;
+事實上，不一定只有上級的 KR 會是下級的 O，也有可能直接對上上級的 O。&lt;/li&gt;
+&lt;li&gt;管理成本
+&lt;img src=&quot;https://i.imgur.com/61upi1i.jpg&quot;&gt;
+需製作組織圖（此圖並非 Dcard真實組織圖） ，幫助營運理解，Dcard 的做法是，每週一次跟各個部門開會，會議上作的第一件事就是打開 OKR，避免沒有定期 checkin 的問題，做完後一次對內公開，幫助每個 team 互相了解。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;四個導入的-tips&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E5%9B%9B%E5%80%8B%E5%B0%8E%E5%85%A5%E7%9A%84-tips&quot; aria-label=&quot;四個導入的 tips permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;四個導入的 Tips&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/0wWiF5F.jpg&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;導入外部系統&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;系統是集結過往經驗製作而成，會明確規範哪裡可以做，哪裡不行。&lt;/li&gt;
+&lt;li&gt;購買前，諮詢該服務的顧問，並確保他能把你們每個人教到會，不然就不買他系統。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;內部教練&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;CEO 定目標的同時，又要當教練的角色會造成兩難，兩件事情最好分開。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;年度戰略（第一part 有提及）&lt;/li&gt;
+&lt;li&gt;週度會議（等同我們PM會議）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;結語&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E7%B5%90%E8%AA%9E&quot; aria-label=&quot;結語 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;結語&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&quot;https://i.imgur.com/sGkP0Bj.png&quot;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;此句話代表的意思是，下一代的工作者也希望被這樣對待，早期是因為產業代工，希望製作「標準人」而導入 KPI，到現在，年輕人更在意的是否達成心理上的認可，以及事情本身是不是真的有意義。&lt;/li&gt;
+&lt;li&gt;你希望用怎樣的企業文化，去對待下一世代的工作者。&lt;/li&gt;
+&lt;li&gt;當 CEO 的下屬有一天根據 OKR 目標 reject 你的想法的時候，就代表導入成功了。
+&lt;img src=&quot;https://i.imgur.com/xHvOey5.jpg&quot;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&quot;qa&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#qa&quot; aria-label=&quot;qa permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Q&amp;#x26;A&lt;/h1&gt;
+&lt;h3 id=&quot;1-是否要導入個人員工的-okr&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#1-%E6%98%AF%E5%90%A6%E8%A6%81%E5%B0%8E%E5%85%A5%E5%80%8B%E4%BA%BA%E5%93%A1%E5%B7%A5%E7%9A%84-okr&quot; aria-label=&quot;1 是否要導入個人員工的 okr permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;1. 是否要導入個人員工的 OKR&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;兩個流派&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;細部至個人&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;也可以， Google 也這樣用，但感覺適合規模更大的公司使用，避免過多分層，到個人會有 align 上的困難。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;細部僅只於團隊&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;代表共同對 Team 的 OKR 作為貢獻(Dcard 是這樣用，且因為系統也只做到這樣)，如果遇到同事處理跨部門的 KR，那他就必須知道需要達成兩種層面的 O。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;結論&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;不要落於組織架構的限制，應根據公司真實情況找出最適合的方法。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;2-okr-執行週期與如何拆分上下層o&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#2-okr-%E5%9F%B7%E8%A1%8C%E9%80%B1%E6%9C%9F%E8%88%87%E5%A6%82%E4%BD%95%E6%8B%86%E5%88%86%E4%B8%8A%E4%B8%8B%E5%B1%A4o&quot; aria-label=&quot;2 okr 執行週期與如何拆分上下層o permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;2. OKR 執行週期與如何拆分上下層O&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;執行週期&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;一般來說是三月統整一次（根據季規劃），且符合財報是三個月一次的 deliver ，但據一位 1000萬美金市值公司的CEO交流後給予的評論是，只要跑兩個月就可以跑得比別人快，更早開始規劃下一期目標，前提是必須在整體團隊都夠熟 OKR的情況下。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如何拆分上下層O&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果到最後底層只剩數字，代表需要轉換敘述方法，必須找出數字背後的意義為何，例如當期O是「達成 8500 的營收」，那就必須探討為什麼是 8500 不是 8200 或 8700，可能是因為目前市值最高的公司，他們只做到 8300，那我只要超過他們就可變第一，但如果另種情況是，藉由 market share 更高而不是 revenue 更高，達到超越第一名的效果，那也是另種解套方式。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;3-規劃年度、季度時落入矛盾，理論上年度是從財務目標推敲，但又有講法是說要從季度可行性往上推年度？&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#3-%E8%A6%8F%E5%8A%83%E5%B9%B4%E5%BA%A6%E3%80%81%E5%AD%A3%E5%BA%A6%E6%99%82%E8%90%BD%E5%85%A5%E7%9F%9B%E7%9B%BE%EF%BC%8C%E7%90%86%E8%AB%96%E4%B8%8A%E5%B9%B4%E5%BA%A6%E6%98%AF%E5%BE%9E%E8%B2%A1%E5%8B%99%E7%9B%AE%E6%A8%99%E6%8E%A8%E6%95%B2%EF%BC%8C%E4%BD%86%E5%8F%88%E6%9C%89%E8%AC%9B%E6%B3%95%E6%98%AF%E8%AA%AA%E8%A6%81%E5%BE%9E%E5%AD%A3%E5%BA%A6%E5%8F%AF%E8%A1%8C%E6%80%A7%E5%BE%80%E4%B8%8A%E6%8E%A8%E5%B9%B4%E5%BA%A6%EF%BC%9F&quot; aria-label=&quot;3 規劃年度、季度時落入矛盾，理論上年度是從財務目標推敲，但又有講法是說要從季度可行性往上推年度？ permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;3. 規劃年度、季度時落入矛盾，理論上年度是從財務目標推敲，但又有講法是說要從季度可行性往上推年度？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;做任何計畫的第一個步驟一定是做財務目標，但如何將年度計畫展開難的地方在於，決定第一季最關鍵的事情是哪些？ 例如一個重要的展會發生在下半年，那上半年你需要做的事情有哪些？所以絕對不會是年度的 OKR 切成季度那麼簡單，是必須考慮優先順序的，領先指標是重要的，例如：流量(1hr為單位)、訂單(1天為單位)，財報代表的是年度，那月度的業績相對年度財報就會是領先指標。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;4-如何賦予教練重任他會是c-level-的人嗎？&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#4-%E5%A6%82%E4%BD%95%E8%B3%A6%E4%BA%88%E6%95%99%E7%B7%B4%E9%87%8D%E4%BB%BB%E4%BB%96%E6%9C%83%E6%98%AFc-level-%E7%9A%84%E4%BA%BA%E5%97%8E%EF%BC%9F&quot; aria-label=&quot;4 如何賦予教練重任他會是c level 的人嗎？ permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;4. 如何賦予教練重任?他會是C level 的人嗎？&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;組織扁平不是在於從自己數上去有幾層，而是在「&lt;strong&gt;組織裡能用越少層級就發揮到影響力&lt;/strong&gt;」，因為事實上不是所有想法都要 CEO 才可以做決斷，所以 1萬人的公司也可以做得很「扁平」，讓 PM 當 Coach 的原因不是因為他有什麼 Title 或職責，而是他最頻繁接觸每個 Team 的角色，所以會是最適合的人選。&lt;/li&gt;
+&lt;li&gt;Senior Manager 或許也可以是 Coach 的角色，但平常他們可能會過於忙碌，且是對於特定 domain knowledge 有自己的 know how，同時處理 Coach 的角色可能沒辦法發揮他本身最大的價值。如何訂定 OKR 通常代表了該企業文化的延伸，所以可以鎖定一個公司文化代表的人擔當 Coach 的角色。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&quot;5-如何做好獎勵制度？okr-是否一定要與績效脫勾&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#5-%E5%A6%82%E4%BD%95%E5%81%9A%E5%A5%BD%E7%8D%8E%E5%8B%B5%E5%88%B6%E5%BA%A6%EF%BC%9Fokr-%E6%98%AF%E5%90%A6%E4%B8%80%E5%AE%9A%E8%A6%81%E8%88%87%E7%B8%BE%E6%95%88%E8%84%AB%E5%8B%BE&quot; aria-label=&quot;5 如何做好獎勵制度？okr 是否一定要與績效脫勾 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;5. 如何做好獎勵制度？OKR 是否一定要與績效脫勾?&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;可以分為管理職＆技術職，但必須讓技術職的知道，他們領的錢不一定會比管理職低，有可能他們程式開發能力夠好，有超越管理職的報酬，但分配的順序可以是由管理職向下分發，不會直接對上工程師。&lt;/li&gt;
+&lt;li&gt;依實際面思考這個人做到的 KR 到底有沒有超越一般人，例如：市面上期待一個保險業務一個月做 100 萬，但他給自己的目標是 1000 萬，最後做到 300 萬，這樣達成指標是0.3，那他的成績到底算好還壞？這邊體現了 OKR 與績效脫鉤的好處，可以從現實面思考，並作為一個確保執行方向一致的制度。&lt;/li&gt;
+&lt;li&gt;不一定所有部門都要導 OKR，例如：行政，甚至有些公司會懷疑到底業務需不需要導入 OKR 還是直接用 KPI 就好，這就必須確認，有沒有你需要導入 OKR 才能達成的目標？Dcard 是有導入，因為希望他們做到更多，且業務應該是彼此學習不是互相競爭。&lt;/li&gt;
+&lt;li&gt;探討「獎勵的比例原則」，例如：兩個業務，一個菜鳥目標是做到500萬，一個頂尖業務目標是1000萬，菜鳥達成了 500萬，評分為1；頂尖達成了700，評分為 0.7，這樣應該獎賞哪一位？理應還是菜鳥，因為這是不同階段的問題，我們不應該鼓勵 Title 或職等，應該從實際貢獻與目標間的達成度來決定獎落誰家。&lt;/li&gt;
+&lt;li&gt;結論： OKR 不應直接掛鉤，應為混合型。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;總結&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E7%B8%BD%E7%B5%90&quot; aria-label=&quot;總結 permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;總結&lt;/h2&gt;
+&lt;p&gt;透過這次的分享，可以了解到導入 OKRs 考慮更多的是跨部門溝通、公司目標與組內方向的理解。希望對於管理職務的夥伴而言，能從前人經驗總得到一些啟發！
+對於非管理職務的夥伴來說，如能更深入探討每一工項背後的意義，相信可以一個更有結構性、說服力的角度來與上司溝通工作項目的安排。從今天開始一起 OKRs 吧 :)&lt;/p&gt;
+&lt;h2 id=&quot;更多參考連結：&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#%E6%9B%B4%E5%A4%9A%E5%8F%83%E8%80%83%E9%80%A3%E7%B5%90%EF%BC%9A&quot; aria-label=&quot;更多參考連結： permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;更多參考連結：&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://meet.bnext.com.tw/articles/view/45932&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;[創業小聚NO.108] 實戰OKR！看 Dcard、綠藤生機創辦人怎麼說？&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.g2.com/categories/objectives-and-key-results-okr&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;OKRs 導入軟體推薦&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.whatmatters.com/resources/okr-vs-scrum-difference-between/&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;理解 OKR 與 Scrum 的差異&lt;/a&gt; &lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item></channel></rss>
