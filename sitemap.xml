@@ -3,10 +3,10 @@
 <url> <loc>https://andreson.io/tags</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://andreson.io/categories</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://andreson.io/pages/about/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://andreson.io/posts/cracking-javascript-series-javascript-engine</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://andreson.io/posts/the-practical-experience-in-implementing-objectives-and-key-results-from-real-cases</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://andreson.io/pages/contacts/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://andreson.io/posts/cracking-javascript-series-javascript-engine</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://andreson.io/posts/cracking-javascript-series-event-loop</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://andreson.io/pages/contacts/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://andreson.io/tag/ast</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://andreson.io/tag/asynchronous</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://andreson.io/tag/call-stack</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
