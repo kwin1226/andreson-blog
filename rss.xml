@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Andreson's Matrix]]></title><description><![CDATA[Reliable self-learning front-end engineer with 4 year experience in building fundamental project architecture to product released. Focusing on problem-solving with the user perspective and streamline the developing process.]]></description><link>https://andreson.io</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 15 Aug 2021 15:32:16 GMT</lastBuildDate><item><title><![CDATA[🥊 Cracking JavaScript Series: Event Loop]]></title><description><![CDATA[Call Stack, Web APIs, Event Queue, Micro-tasks, and Macro-tasks]]></description><link>https://andreson.io/posts/cracking-javascript-series-event-loop</link><guid isPermaLink="false">https://andreson.io/posts/cracking-javascript-series-event-loop</guid><pubDate>Thu, 03 Jun 2021 22:40:32 GMT</pubDate><content:encoded>&lt;p&gt;We may have heard that JavaScript executes all the operations on a single thread, but what is the magic empowering JavaScript to be an &lt;strong&gt;asynchronous programming language&lt;/strong&gt;?
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Andreson's Matrix]]></title><description><![CDATA[Reliable self-learning front-end engineer with 4 year experience in building fundamental project architecture to product released. Focusing on problem-solving with the user perspective and streamline the developing process.]]></description><link>https://andreson.io</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 24 Aug 2021 16:21:53 GMT</lastBuildDate><item><title><![CDATA[🥊 Cracking JavaScript Series: Event Loop]]></title><description><![CDATA[Call Stack, Web APIs, Event Queue, Micro-tasks, and Macro-tasks]]></description><link>https://andreson.io/posts/cracking-javascript-series-event-loop</link><guid isPermaLink="false">https://andreson.io/posts/cracking-javascript-series-event-loop</guid><pubDate>Thu, 03 Jun 2021 22:40:32 GMT</pubDate><content:encoded>&lt;p&gt;We may have heard that JavaScript executes all the operations on a single thread, but what is the magic empowering JavaScript to be an &lt;strong&gt;asynchronous programming language&lt;/strong&gt;?
 Event Loop is the rationale and forms the &lt;strong&gt;non-blocking feature&lt;/strong&gt; like Node.js.&lt;/p&gt;
 &lt;p&gt;First, we must keep in mind that &lt;strong&gt;Event Loop is related to the runtime environment&lt;/strong&gt;, such as the browser or Node.js, not the JavaScript Engine(V8).&lt;/p&gt;
 &lt;p&gt;To be more specific, Event Loop is an endless loop that waits for tasks, executes them, and then sleeps, waiting for more tasks.
@@ -7,7 +7,7 @@ If you first get to know this topic and still feel a bit fuzzy, don’t worry, I
 &lt;h2 id=&quot;basic-architecture&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#basic-architecture&quot; aria-label=&quot;basic architecture permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Basic Architecture&lt;/h2&gt;
 &lt;p&gt;&lt;span
       class=&quot;gatsby-resp-image-wrapper&quot;
-      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; &quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 640px; &quot;
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
@@ -18,38 +18,23 @@ If you first get to know this topic and still feel a bit fuzzy, don’t worry, I
   &gt;
     &lt;span
     class=&quot;gatsby-resp-image-background-image&quot;
-    style=&quot;padding-bottom: 107.08333333333333%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAVCAYAAABG1c6oAAAACXBIWXMAAAPoAAAD6AG1e1JrAAADmElEQVQ4y51Vy3IbVRT0PxBSLkkjzciS0MuWbEvz1ozmpdFblqXIsSExlKGKrCiziKuyCFCpFMUm7PkI1qzY8g18TdN3ZDlG9gYWrXvqXt2ec7rPmdlJHdr4Pg7x64sRqoaF9EEH0oGNpxUbGcbZpo1sg2vjdm1uodG5O5eInT1dx+vfP+DPv3/D+YWFT+oeqp0Q0cJHxXaRPfagtD3IG7Q85FrdBPK9faXtJw/YSdcstK/meHkzRdH08KQZ4pvrAH/9UYYzM7Db6kHW+Wdeyqo+ZCNEoROjYMdJLPbEmawFyB062BFpSjUbn9Zc5KwIu1oE+8TGs8sm8h0XGTNKLuZuCfPeCObqEsbyJRR38JGQ6x2h0u5CEVkYAVqTFSrBKYkH0E7OUY9nyPLpoqy0HmHpmvgh1vBjT8WCcYp7srpFKB9TE7Fhhqj2ZihEU2bXQ8mfI++MkdUDVN0hysEMc6+DN30Tb2IDp76LanSKeneEPSNaa7ghzFDUmh1gYRrQWy5K3R6cuQV1Qm2MHmokTGkhlr6Dn8bExMGC5LtqgHKnj6IVQ7pPmCWhIjIMDfQ0E0f9CO/fFXHzdoRG/zmqTj+5/Llv4cNII3RceBaetklIg4pm79+EOdWl+HOk/W/xxA3QZG/+/L6MV9c6JL2PijOARFlKho99cw0RZ6htye4/QkhjZHNCfIk9i/p5MUYvhtCnETIkqntj5PWQLcRW0dYQsTDjEUI3MUWidrLmoOKOqEmfxGNkWmHSFmVnmFwUKHcGzJgmMesKta37ExTMLVNEn+XYb4eDJVrjFRRmmWM7CEjMPsu1RPELzEQ8QOKkCChsqQO6X9h2OcuRKrBRW9MzNAan2O9Tz9vMFTXEEdsjWl0hWH2FZjRfT4aYnIRw+pBQHGY0zm84hXt2yf6LoY3PUPGGyHW7ODyZ4WA8wXG8wD4JRJY16lr3Jo8TCnHTLOvq5i2u3/2C6IuvkTpyUXAiSD0Hux6ngm2SOV6XmidBwVqX/6jLgjCldrF8dY2L716jxokp3jZs0YxhTc6hj1awZhdQuQpCQaTQ6Wp39LCxE1PoVJozLds0xI7QGj5jyQO+EDoohR6KgYc9ZiLGTEhU7Y4Tpz8jREs9dJkzK5NUuC2QOnKSkhR9Y4C/nnlhFM0QZxmWL/Dg5XDn2n2It4z6kWQbm/9s4uyGUKSaowH/FXKyOihT4yr1TEoWP9Lt9+D/YvN9EfE/fGq3zQYneEIAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+    style=&quot;padding-bottom: 107.5%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAWCAYAAADAQbwGAAAACXBIWXMAAAPoAAAD6AG1e1JrAAADw0lEQVQ4y5VV224bVRT1N1SFpE5mPHYS32I7F9/mPvaMPfb4nqRt0qoiadVSJNTygriVEqVC8AZC4p1P4Bd44x+Q+JbF2jNpSOu+5GFpjs9lnbX32mc7pew4WK2YWC3qSFcdqLs24SCzZ8djZecG4LlUmge/GgT4/XSCqmkhXSMpFz8u2ViT8e4NwHOpLdPA13/+ir/+/QOnn5i4te2jYPbQO/RRcT2o9S6yzS6062gIOsn3ci7b9KHVPaTWti20nh/h6fdzFKwuPtoLMDuL8M/fRYxPGvw9QNbwofKQ2vKR0QNsWH0iRJYXq+0gXstwTS5JiUxl28btsoeM2ceddgh95uLZ5xUUPBfrRgjN6iEjSnh4nXv2Dx7BOH6Mrf4CqtGLya4IJZnZZgdZnZNGgNpwgYK/wO16hJ3oLirhnPNUws0rDR+65eL10MCrsYvPfJ2XdLFe78Qqrwg1TsgNKgnLw0NUx0fQ7B7J76HcP4TCMPPWgBfN4HR7+LbfxjeRjeeBgf3BAkV3hIITIVO/RqgwqUUrwF3bQI2Kt5wQlZ6HahggZw9R7U6gmgM4no83kYGLiYOXoUWyAXJMS6U7JaH3P6FKwhwVVgMLh602djt9nF8U8eZHC7vRCUrOECvc4zkufoua+GViUGkLOaZKYbglbxTzXAuZ0KdIB2dYDXyUugO8Pi/jux9aKPcOqGACpZVE0fG68DoBDJd5owhJV8kbv0fYFJdnyFovodFJzWb4Tzo4eOxjrZ0cEGPWWHsr9QSrHK83EkNkPVN/zxRRqTRNFNyIGCHvLujw6DKkcZx4QckVjJIvQxVTisshk5B1ludie3qMTeZMcqq1uklJyBrn8jRok45n9V6MnNGPDVkiVCl/0x3CPHqE5uwEe5N7DM9LXgHN2KCTrdF9mLMHNG4G5TJU+YrK0ocUqqw3jeWyE7H2+KyKnXGsKEMn29P7MXSqF9INMyT62LIH2KZhSwo1Eq4xvPmnL/DFxc/wHz5BjU+rFs5wJzShRA6UCfdaLC+9H6uTy6os9jxJlxRKjtIs6LMvX+HF+U9wj09xq6LHF4maij+lkilqvXk8FmWSP3l2Ena5M/5AyDRhszPC7ugoDtmYP8BOfw7VstGYzdGYz1BnOpp842KIKKwF88RxKnznpUg3iZsAidaZM80O4xYlecrZ0jikTl2GmiiSiDaoMEdiGb/Tba4UxqWTlI+Mpf7eupxpBQm49pZA9sROX+KKMLPvLXflGyDXSrpRjqWXkj8WIb3Rf8c1xP2Ugko0Tr7/AXvg2Suz5iofAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
   &gt;&lt;/span&gt;
-  &lt;picture&gt;
-          &lt;source
-              srcset=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/8ac56/js-event-loop.webp 240w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/d3be9/js-event-loop.webp 480w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/e46b2/js-event-loop.webp 960w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/f992d/js-event-loop.webp 1440w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/882b9/js-event-loop.webp 1920w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/57aca/js-event-loop.webp 2031w&quot;
-              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
-              type=&quot;image/webp&quot;
-            /&gt;
-          &lt;source
-            srcset=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/8ff5a/js-event-loop.png 240w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/e85cb/js-event-loop.png 480w,
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;js event loop&quot;
+        title=&quot;js event loop&quot;
+        src=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/6af66/js-event-loop.png&quot;
+        srcset=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/69538/js-event-loop.png 160w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/72799/js-event-loop.png 320w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/6af66/js-event-loop.png 640w,
 /static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png 960w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/07a9c/js-event-loop.png 1440w,
-/static/c0472535f14bcb1f85ce04e4cd282aac/29114/js-event-loop.png 1920w,
+/static/c0472535f14bcb1f85ce04e4cd282aac/21b4d/js-event-loop.png 1280w,
 /static/c0472535f14bcb1f85ce04e4cd282aac/ea941/js-event-loop.png 2031w&quot;
-            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
-            type=&quot;image/png&quot;
-          /&gt;
-          &lt;img
-            class=&quot;gatsby-resp-image-image&quot;
-            src=&quot;/static/c0472535f14bcb1f85ce04e4cd282aac/d9199/js-event-loop.png&quot;
-            alt=&quot;js event loop&quot;
-            title=&quot;js event loop&quot;
-            loading=&quot;lazy&quot;
-            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
-          /&gt;
-        &lt;/picture&gt;
+        sizes=&quot;(max-width: 640px) 100vw, 640px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
   &lt;/a&gt;
     &lt;/span&gt;&lt;/p&gt;
 &lt;p&gt;To execute an async function, the browser would utilize the four vital steps:&lt;/p&gt;
@@ -156,14 +141,14 @@ For a better understanding, I would break Task Queue into three parts to elabora
 &lt;li&gt;In JavaScript, no code is allowed to execute until an event has occurred. It is worth mentioning that the execution of a JavaScript code execution is itself a macro-task. The event is queued as a macro-task. When a (macro) task, present in the macro-task queue is being executed, new events may be registered and in turn, created and added to the queue.&lt;/li&gt;
 &lt;li&gt;In comparison, the &lt;strong&gt;macro-task queue has a lower priority.&lt;/strong&gt; Macro-tasks include parsing HTML, generating DOM, executing main thread JavaScript code, and other events such as page loading, input, network events, timer events, etc.&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Examples:&lt;/strong&gt; setTimeout, setInterval, setImmediate, requestAnimationFrame, I/O, UI Rendering&lt;/p&gt;
+&lt;p&gt;Examples: setTimeout, setInterval, setImmediate, requestAnimationFrame, I/O, UI Rendering&lt;/p&gt;
 &lt;h4 id=&quot;microtasks&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#microtasks&quot; aria-label=&quot;microtasks permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;Microtasks&lt;/h4&gt;
 &lt;ul&gt;
 &lt;li&gt;A micro-task is said to be a function that is executed after the function or program which created it exits and only if the JavaScript execution stack is empty, but before returning control to the event loop being used by the user agent to drive the script’s execution environment. A Micro-task is also capable of en-queuing other micro-tasks.&lt;/li&gt;
 &lt;li&gt;Micro-tasks are often scheduled for things that are required to be completed immediately after the execution of the current script. &lt;strong&gt;On completion of one macro-task, the event loop moves on to the micro-task queue.&lt;/strong&gt; The event loop does not move to the next task outside of the micro-task queue until all the tasks inside the micro-task queue are completed. This implies that the &lt;strong&gt;micro-task queue has a higher priority.&lt;/strong&gt;&lt;/li&gt;
 &lt;li&gt;Once all the tasks inside the micro-task queue are finished, only then does the event loop shift back to the macro-task queue. The primary reason for prioritizing the micro-task queue is to &lt;strong&gt;improve the user experience.&lt;/strong&gt; The micro-task queue is processed after callbacks given that any other JavaScript is not under mid-execution. Micro-tasks include mutation &lt;strong&gt;observer callbacks&lt;/strong&gt; as well as &lt;strong&gt;promise callbacks.&lt;/strong&gt;&lt;/li&gt;
 &lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Examples:&lt;/strong&gt; process.nextTick, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Promises&lt;/a&gt;, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;queueMicrotask&lt;/a&gt;, MutationObserver&lt;/p&gt;
+&lt;p&gt;Examples: process.nextTick, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;Promises&lt;/a&gt;, &lt;a href=&quot;https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;queueMicrotask&lt;/a&gt;, MutationObserver&lt;/p&gt;
 &lt;p&gt;What’s the output of the following code:&lt;/p&gt;
 &lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;javascript&quot;&gt;&lt;pre class=&quot;language-javascript&quot;&gt;&lt;code class=&quot;language-javascript&quot;&gt;&lt;span class=&quot;token function&quot;&gt;setTimeout&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token keyword&quot;&gt;function&lt;/span&gt; &lt;span class=&quot;token function&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;{&lt;/span&gt;console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;token function&quot;&gt;log&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;token string&quot;&gt;&quot;timeout&quot;&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;token punctuation&quot;&gt;;&lt;/span&gt;
 
@@ -180,7 +165,7 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
 &quot;timeout&quot;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;&lt;figure class=&quot;md-figure&quot;&gt;&lt;span
       class=&quot;gatsby-resp-image-wrapper&quot;
-      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 866px; &quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 640px; &quot;
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
@@ -191,32 +176,21 @@ console&lt;span class=&quot;token punctuation&quot;&gt;.&lt;/span&gt;&lt;span cl
   &gt;
     &lt;span
     class=&quot;gatsby-resp-image-background-image&quot;
-    style=&quot;padding-bottom: 127.91666666666666%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAACXBIWXMAAAsTAAALEwEAmpwYAAADzElEQVRIx51Uy27bVhDVf7e7IkAXRVcNUKBFgqRp4i6cxIDd1GhQ10kVGbEjy40ky3qQokiJokS9KFFv+3TOyGRpLQIkFyDu5X2cmTlzZlI3Nzfg4Bytt0d0pue3dyaTCTzPQ9fvotPpYLVa6X5qNpvpYfQNh8P4G41GGI/Hd87D6RSr9RqLxQLhJNR7fs/HVPbXsp8KwxDX19dqgR64rgvLsmDbNhzHwWAwiM85N9wO7O4QiyXQajfQ6/viNUDHaDxF5O2QOfNxMtTozPF6sLwA2eIJdl//gD8zT2G3DLTbnkagIdPV6EHkKUdyX9dipNXpw2wPcJI/wtP97/Di9Y+w3apEsqEpRVSGRWDy4vu+zguJiWvu0wgvB8IpQ3b8AEG4gGmVhNNADZK6oYAqh82Wi9l8juVyqeBMxmw6kTlQwE3ixptP7s8Wc1TMGjKnZyiUy+gNB5oUvk2NxwEO93YwF4CBAOUKH1Gq1SS8FQbOMcKRoR4cnWdxlP2g67kYOH5/gicvd/Hr3i6KRhVzcUgBlxJOIfMHRp0mSmYdRQErVGoYB30M7FcY+ZdYi8RO8h+RyecVkG86IhWjYcGwGwiEtthDIucu/kW/3xc99ZBOv0O9bmnYp2dnaHttBTENA0a1GqtAgYUiqiHmkEkhP41GQ9FphfojGC9wn2sapT5brVYsYIpvIsLmOZM4HI42gBQjL/DRQizyUaVSQVW8MU0TPfGaD+jNWmK3XQ+tXoC50NByHRF2T/gWXiVRqsOksLfrNlnb/wvbR9nu4qKSxau3D5A+34PXceBFwiZgVBnJEuMe15HQI67qTRfFuoO3uUM8fH4Pzw6+l72S5IDCHmx0mCw1crnhCEoDJaKVcgtYtRwYbR+j6QJl4wKjsa/7dEw5JCB51K7CTAWBuj6l4CURzm0ieM67XteXO2OUKWxRwWW1clfYG66uYy/zb/7CLJyo1Xu/PMLXP/90x0MmaCLgmVwWz/ZfYGf/JUp1A8vFpspSEXccI8no4YP7cK1NdXzz+BG+igBvGwVpCCQKSwRdvCqjcFUSrzu6pyFHYAyJMqEOTdPQxtBqNkXkda1ljsg4JcThti0BGsR8a5aTCdlu+8l1BBZTU36n7ev344cwpOuwH2qDTV761Jc0zPDPC2/w+Pm3+O3gvjTYmkQx1/L9LMCkHterG+mHV1IhYUwHVZDaroxPfUnBX1bL+DudxvvcOdyup/sa8ucCcjBJ/3w4xRPphTsHe7gUTUaJ/SIPOfdFzLaowKib2vYo7DjLXwIaDf6vhQIKnuv/AOd1vAEOHWWgAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+    style=&quot;padding-bottom: 127.49999999999999%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAACXBIWXMAAAsTAAALEwEAmpwYAAADzElEQVRIx51Uy27bVhDVf7e7IkAXRVcNUKBFgqRp4i6cxIDd1GhQ10kVGbEjy40ky3qQokiJokS9KFFv+3TOyGRpLQIkFyDu5X2cmTlzZlI3Nzfg4Bytt0d0pue3dyaTCTzPQ9fvotPpYLVa6X5qNpvpYfQNh8P4G41GGI/Hd87D6RSr9RqLxQLhJNR7fs/HVPbXsp8KwxDX19dqgR64rgvLsmDbNhzHwWAwiM85N9wO7O4QiyXQajfQ6/viNUDHaDxF5O2QOfNxMtTozPF6sLwA2eIJdl//gD8zT2G3DLTbnkagIdPV6EHkKUdyX9dipNXpw2wPcJI/wtP97/Di9Y+w3apEsqEpRVSGRWDy4vu+zguJiWvu0wgvB8IpQ3b8AEG4gGmVhNNADZK6oYAqh82Wi9l8juVyqeBMxmw6kTlQwE3ixptP7s8Wc1TMGjKnZyiUy+gNB5oUvk2NxwEO93YwF4CBAOUKH1Gq1SS8FQbOMcKRoR4cnWdxlP2g67kYOH5/gicvd/Hr3i6KRhVzcUgBlxJOIfMHRp0mSmYdRQErVGoYB30M7FcY+ZdYi8RO8h+RyecVkG86IhWjYcGwGwiEtthDIucu/kW/3xc99ZBOv0O9bmnYp2dnaHttBTENA0a1GqtAgYUiqiHmkEkhP41GQ9FphfojGC9wn2sapT5brVYsYIpvIsLmOZM4HI42gBQjL/DRQizyUaVSQVW8MU0TPfGaD+jNWmK3XQ+tXoC50NByHRF2T/gWXiVRqsOksLfrNlnb/wvbR9nu4qKSxau3D5A+34PXceBFwiZgVBnJEuMe15HQI67qTRfFuoO3uUM8fH4Pzw6+l72S5IDCHmx0mCw1crnhCEoDJaKVcgtYtRwYbR+j6QJl4wKjsa/7dEw5JCB51K7CTAWBuj6l4CURzm0ieM67XteXO2OUKWxRwWW1clfYG66uYy/zb/7CLJyo1Xu/PMLXP/90x0MmaCLgmVwWz/ZfYGf/JUp1A8vFpspSEXccI8no4YP7cK1NdXzz+BG+igBvGwVpCCQKSwRdvCqjcFUSrzu6pyFHYAyJMqEOTdPQxtBqNkXkda1ljsg4JcThti0BGsR8a5aTCdlu+8l1BBZTU36n7ev344cwpOuwH2qDTV761Jc0zPDPC2/w+Pm3+O3gvjTYmkQx1/L9LMCkHterG+mHV1IhYUwHVZDaroxPfUnBX1bL+DudxvvcOdyup/sa8ucCcjBJ/3w4xRPphTsHe7gUTUaJ/SIPOfdFzLaowKib2vYo7DjLXwIaDf6vhQIKnuv/AOd1vAEOHWWgAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
   &gt;&lt;/span&gt;
-  &lt;picture&gt;
-          &lt;source
-              srcset=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/8ac56/task-queue-composition.webp 240w,
-/static/17660f2ec8245f8572b1f68e741dd7f5/d3be9/task-queue-composition.webp 480w,
-/static/17660f2ec8245f8572b1f68e741dd7f5/e299d/task-queue-composition.webp 866w&quot;
-              sizes=&quot;(max-width: 866px) 100vw, 866px&quot;
-              type=&quot;image/webp&quot;
-            /&gt;
-          &lt;source
-            srcset=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/8ff5a/task-queue-composition.png 240w,
-/static/17660f2ec8245f8572b1f68e741dd7f5/e85cb/task-queue-composition.png 480w,
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;task queue composition&quot;
+        title=&quot;task queue composition&quot;
+        src=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/6af66/task-queue-composition.png&quot;
+        srcset=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/69538/task-queue-composition.png 160w,
+/static/17660f2ec8245f8572b1f68e741dd7f5/72799/task-queue-composition.png 320w,
+/static/17660f2ec8245f8572b1f68e741dd7f5/6af66/task-queue-composition.png 640w,
 /static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png 866w&quot;
-            sizes=&quot;(max-width: 866px) 100vw, 866px&quot;
-            type=&quot;image/png&quot;
-          /&gt;
-          &lt;img
-            class=&quot;gatsby-resp-image-image&quot;
-            src=&quot;/static/17660f2ec8245f8572b1f68e741dd7f5/c1328/task-queue-composition.png&quot;
-            alt=&quot;task queue composition&quot;
-            title=&quot;task queue composition&quot;
-            loading=&quot;lazy&quot;
-            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
-          /&gt;
-        &lt;/picture&gt;
+        sizes=&quot;(max-width: 640px) 100vw, 640px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
   &lt;/a&gt;
     &lt;/span&gt;&lt;figcaption&gt;The recap of Macrotask &amp;#x26; Microtask&lt;/figcaption&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;However, in the real scenario, nuance always exists and it &lt;a href=&quot;https://stackoverflow.com/questions/50754030/event-loop-prefers-microtask-queue-over-callback-queue&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;may not match our understanding &lt;/a&gt; of the rule “Micro Queue is prior than the Marco Queue.”&lt;/em&gt;&lt;/p&gt;
@@ -307,7 +281,7 @@ Callback Time&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;li&gt;&lt;a href=&quot;https://towardsdev.com/event-loop-in-javascript-672c07618dc9&quot; target=&quot;_blank&quot; rel=&quot;nofollow noopener noreferrer&quot;&gt;https://towardsdev.com/event-loop-in-javascript-672c07618dc9&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;</content:encoded></item><item><title><![CDATA[🥊 Cracking JavaScript Series: JavaScript Engine]]></title><description><![CDATA[AST, Compiler, Interpreter, V8, Call Stack, and Memory Heap]]></description><link>https://andreson.io/posts/cracking-javascript-series-javascript-engine</link><guid isPermaLink="false">https://andreson.io/posts/cracking-javascript-series-javascript-engine</guid><pubDate>Mon, 16 Mar 2020 18:32:18 GMT</pubDate><content:encoded>&lt;p&gt;&lt;span
       class=&quot;gatsby-resp-image-wrapper&quot;
-      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; &quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 640px; &quot;
     &gt;
       &lt;a
     class=&quot;gatsby-resp-image-link&quot;
@@ -320,36 +294,21 @@ Callback Time&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
     class=&quot;gatsby-resp-image-background-image&quot;
     style=&quot;padding-bottom: 53.75%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAALABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAEDAv/EABYBAQEBAAAAAAAAAAAAAAAAAAMAAf/aAAwDAQACEAMQAAABrJNiiaLf/8QAGRABAAMBAQAAAAAAAAAAAAAAAQACERIi/9oACAEBAAEFAj0WrhBcVzpn/8QAFBEBAAAAAAAAAAAAAAAAAAAAEP/aAAgBAwEBPwE//8QAFREBAQAAAAAAAAAAAAAAAAAAEBH/2gAIAQIBAT8Bh//EABcQAAMBAAAAAAAAAAAAAAAAAAARMSD/2gAIAQEABj8Co8U//8QAGxABAAICAwAAAAAAAAAAAAAAAQARECExYYH/2gAIAQEAAT8hTy6egg7F4NQY6ix82if/2gAMAwEAAgADAAAAEGDP/8QAFhEBAQEAAAAAAAAAAAAAAAAAARAR/9oACAEDAQE/EBxn/8QAFhEBAQEAAAAAAAAAAAAAAAAAACFh/9oACAECAQE/EMK//8QAHBABAAICAwEAAAAAAAAAAAAAAQARIVEQMUGB/9oACAEBAAE/EEmG4QuHyOguBPA1ROhBTwj6F0KNE//Z&apos;); background-size: cover; display: block;&quot;
   &gt;&lt;/span&gt;
-  &lt;picture&gt;
-          &lt;source
-              srcset=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/8ac56/javascript-engine-execution-steps.webp 240w,
-/static/74f1593e765ce853960c4c5b7b897fb8/d3be9/javascript-engine-execution-steps.webp 480w,
-/static/74f1593e765ce853960c4c5b7b897fb8/e46b2/javascript-engine-execution-steps.webp 960w,
-/static/74f1593e765ce853960c4c5b7b897fb8/f992d/javascript-engine-execution-steps.webp 1440w,
-/static/74f1593e765ce853960c4c5b7b897fb8/882b9/javascript-engine-execution-steps.webp 1920w,
-/static/74f1593e765ce853960c4c5b7b897fb8/b8f0e/javascript-engine-execution-steps.webp 3358w&quot;
-              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
-              type=&quot;image/webp&quot;
-            /&gt;
-          &lt;source
-            srcset=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/09b79/javascript-engine-execution-steps.jpg 240w,
-/static/74f1593e765ce853960c4c5b7b897fb8/7cc5e/javascript-engine-execution-steps.jpg 480w,
+  &lt;img
+        class=&quot;gatsby-resp-image-image&quot;
+        alt=&quot;javascript engine execution steps&quot;
+        title=&quot;javascript engine execution steps&quot;
+        src=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/c08c5/javascript-engine-execution-steps.jpg&quot;
+        srcset=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/0913d/javascript-engine-execution-steps.jpg 160w,
+/static/74f1593e765ce853960c4c5b7b897fb8/cb69c/javascript-engine-execution-steps.jpg 320w,
+/static/74f1593e765ce853960c4c5b7b897fb8/c08c5/javascript-engine-execution-steps.jpg 640w,
 /static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg 960w,
-/static/74f1593e765ce853960c4c5b7b897fb8/644c5/javascript-engine-execution-steps.jpg 1440w,
-/static/74f1593e765ce853960c4c5b7b897fb8/0f98f/javascript-engine-execution-steps.jpg 1920w,
+/static/74f1593e765ce853960c4c5b7b897fb8/eea4a/javascript-engine-execution-steps.jpg 1280w,
 /static/74f1593e765ce853960c4c5b7b897fb8/25e07/javascript-engine-execution-steps.jpg 3358w&quot;
-            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
-            type=&quot;image/jpeg&quot;
-          /&gt;
-          &lt;img
-            class=&quot;gatsby-resp-image-image&quot;
-            src=&quot;/static/74f1593e765ce853960c4c5b7b897fb8/6a068/javascript-engine-execution-steps.jpg&quot;
-            alt=&quot;javascript engine execution steps&quot;
-            title=&quot;javascript engine execution steps&quot;
-            loading=&quot;lazy&quot;
-            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
-          /&gt;
-        &lt;/picture&gt;
+        sizes=&quot;(max-width: 640px) 100vw, 640px&quot;
+        style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+        loading=&quot;lazy&quot;
+      /&gt;
   &lt;/a&gt;
     &lt;/span&gt;&lt;/p&gt;
 &lt;h3 id=&quot;history&quot; style=&quot;position:relative;&quot;&gt;&lt;a href=&quot;#history&quot; aria-label=&quot;history permalink&quot; class=&quot;anchor before&quot;&gt;&lt;svg aria-hidden=&quot;true&quot; focusable=&quot;false&quot; height=&quot;16&quot; version=&quot;1.1&quot; viewBox=&quot;0 0 16 16&quot; width=&quot;16&quot;&gt;&lt;path fill-rule=&quot;evenodd&quot; d=&quot;M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;&lt;/a&gt;History&lt;/h3&gt;
